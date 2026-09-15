@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>微博智能分析平台</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/style.css?v=20260915e">
+</head>
+<body>
+  <div id="app">
+    <!-- 顶部导航 -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff">
+              <path d="M20.194 14.197c0 3.306-4.063 5.988-9.076 5.988-5.012 0-9.076-2.682-9.076-5.988 0-3.307 4.064-5.989 9.076-5.989 5.013 0 9.076 2.682 9.076 5.989z"/>
+            </svg>
+          </div>
+          <span class="logo-text">微博智能分析平台</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <!-- 通知 -->
+        <div class="topbar-icon-btn" title="通知中心" onclick="toggleDropdown('notification')">
+          <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor">
+            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+          </svg>
+          <span class="notification-badge">3</span>
+        </div>
+        <!-- 通知下拉菜单 -->
+        <div class="dropdown-menu" id="dropdown-notification">
+          <div class="dropdown-header">
+            <span>通知中心</span>
+            <span class="dropdown-header-extra" id="notification-unread-count">3 条未读</span>
+          </div>
+          <div class="dropdown-list" id="notification-list">
+            <div class="dropdown-item notification-item" data-id="1" onclick="markNotificationAsRead(1);Router.navigate('daily-report');closeDropdowns()">
+              <div class="notification-unread-dot"></div>
+              <div class="dropdown-item-icon" style="background:var(--primary-light);color:var(--primary);">📊</div>
+              <div class="dropdown-item-content">
+                <div class="dropdown-item-title">每日报告已生成</div>
+                <div class="dropdown-item-desc">2026年9月13日 AI 舆情分析日报已生成</div>
+                <div class="dropdown-item-time">10分钟前</div>
+              </div>
+            </div>
+            <div class="dropdown-item notification-item" data-id="2" onclick="markNotificationAsRead(2);Router.navigate('collect-task');closeDropdowns()">
+              <div class="notification-unread-dot"></div>
+              <div class="dropdown-item-icon" style="background:var(--success-light);color:var(--success);">✅</div>
+              <div class="dropdown-item-content">
+                <div class="dropdown-item-title">采集任务完成</div>
+                <div class="dropdown-item-desc">微博数据采集 - AI行业 已完成，采集 1,286 条</div>
+                <div class="dropdown-item-time">30分钟前</div>
+              </div>
+            </div>
+            <div class="dropdown-item notification-item" data-id="3" onclick="markNotificationAsRead(3);Router.navigate('sentiment');closeDropdowns()">
+              <div class="notification-unread-dot"></div>
+              <div class="dropdown-item-icon" style="background:var(--warning-light);color:var(--warning);">⚠️</div>
+              <div class="dropdown-item-content">
+                <div class="dropdown-item-title">负面微博预警</div>
+                <div class="dropdown-item-desc">监测到 6 条负面微博，建议及时处理</div>
+                <div class="dropdown-item-time">1小时前</div>
+              </div>
+            </div>
+          </div>
+          <div class="dropdown-footer" onclick="markAllNotificationsAsRead()">
+            全部标记为已读
+          </div>
+        </div>
+
+        <!-- 设置 -->
+        <div class="topbar-icon-btn" title="系统设置" onclick="Router.navigate('api-key');closeDropdowns()">
+          <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor">
+            <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+            <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319z"/>
+          </svg>
+        </div>
+
+        <!-- 用户 -->
+        <div class="user-info" onclick="toggleDropdown('user')">
+          <div class="user-avatar">王</div>
+          <div class="user-detail">
+            <div class="user-name">王杰</div>
+            <div class="user-role">管理员</div>
+          </div>
+          <svg class="user-arrow" viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
+            <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+          </svg>
+        </div>
+        <!-- 用户下拉菜单 -->
+        <div class="dropdown-menu" id="dropdown-user">
+          <div class="dropdown-user-header">
+            <div class="user-avatar" style="width:40px;height:40px;font-size:16px;">王</div>
+            <div>
+              <div style="font-weight:600;font-size:14px;">王杰</div>
+              <div style="font-size:12px;color:var(--text-secondary);">wangjie@example.com</div>
+            </div>
+          </div>
+          <div class="dropdown-list">
+            <div class="dropdown-item" onclick="Router.navigate('api-key');closeDropdowns()">
+              <span class="dropdown-item-icon-text">🔑</span>
+              <span>API Key 管理</span>
+            </div>
+            <div class="dropdown-item" onclick="Router.navigate('user-mgmt');closeDropdowns()">
+              <span class="dropdown-item-icon-text">👥</span>
+              <span>用户管理</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主体布局 -->
+    <div class="main-layout">
+      <!-- 左侧菜单 -->
+      <aside class="sidebar" id="sidebar">
+        <nav class="menu" id="menu">
+          <!-- 菜单由 JS 动态渲染 -->
+        </nav>
+      </aside>
+
+      <!-- 内容区域 -->
+      <main class="content" id="content">
+        <!-- 页面内容由 JS 动态渲染 -->
+        <div class="page-loading">
+          <div class="loading-spinner"></div>
+          <span>加载中...</span>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast 提示 -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- 详情抽屉 -->
+  <div class="drawer-mask" id="drawerMask" onclick="closeDrawer()"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <span class="drawer-title" id="drawerTitle">详情</span>
+      <button class="drawer-close" onclick="closeDrawer()">×</button>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+  </div>
+
+  <script src="/app.js?v=20260915e"></script>
+</body>
+</html>

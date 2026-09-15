@@ -2,7 +2,7 @@
 
 > 基于 AI 的微博舆情分析与热点洞察平台，助力企业实时掌握市场动态与用户情感。
 
-[![Version](https://img.shields.io/badge/version-v1.0.0-blue.svg)](https://github.com/wangjiespark316/weibo-analytics)
+[![Version](https://img.shields.io/badge/version-v1.0.1-blue.svg)](https://github.com/wangjiespark316/weibo-analytics)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10+-yellow.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-teal.svg)](https://fastapi.tiangolo.com/)
@@ -547,6 +547,15 @@ weibo-analytics/
 ```
 
 ## 📋 版本历史
+
+### v1.0.1-hotfix (2026-09-15)
+- 🔧 **紧急修复**：AI日报页面数据真实性问题
+- 🔧 删除AI日报页面所有硬编码假数据（日期、微博数、热点、情感比例、洞察文本）
+- 🔧 前端AI日报页面重构为动态渲染后端API返回的真实Markdown内容
+- 🔧 新增Markdown渲染函数（支持标题、表格、列表、引用、粗体）
+- 🔧 首页日报卡片日期从硬编码改为动态计算前一天日期
+- 🔧 后端日报生成增强：标题动态标注日期 + 数据统计范围说明
+- ✅ 数据真实性检查通过：无硬编码、无Math.random、无假统计
 
 ### v1.0.0-final (2026-09-15)
 - 🔒 最终发布冻结版本
