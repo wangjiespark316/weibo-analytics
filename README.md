@@ -2,7 +2,7 @@
 
 > 基于 AI 的微博舆情分析与热点洞察平台，助力企业实时掌握市场动态与用户情感。
 
-[![Version](https://img.shields.io/badge/version-v1.0.1-blue.svg)](https://github.com/wangjiespark316/weibo-analytics)
+[![Version](https://img.shields.io/badge/version-v1.1.0-blue.svg)](https://github.com/wangjiespark316/weibo-analytics)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10+-yellow.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-teal.svg)](https://fastapi.tiangolo.com/)
@@ -13,6 +13,8 @@
 ## 📖 项目介绍
 
 微博智能分析平台是一个**基于 AI 的微博舆情分析系统**，实现微博数据自动采集、热点发现、情感分析、用户影响力分析和 AI 日报生成。
+
+在此基础上，平台已进一步升级为 **AI 行业情报与销售智能系统**：不再只监控固定关键词，而是通过 LLM 自动聚类「AI 热点事件」、追踪「AI 产品声量」、雷达扫描「技术趋势」，每日自动产出《AI 行业日报》，并延伸出面向销售团队的客户画像、成交概率预测、销售漏斗与飞书主动推送。
 
 平台采用**纯前端 + FastAPI 后端**架构，通过 Nginx 反向代理部署在云服务器上，支持企业级 SaaS 管理后台界面，可直接用于客户演示和内部舆情监控。
 
@@ -67,8 +69,21 @@
 - 包含热点 TOP、情感分布、AI 洞察建议
 - Markdown 格式输出，支持复制分享
 
+### 🛰️ AI 行业情报三层模型（v1.1）
+- **AI 热点事件自动发现**：LLM 对当日 AI 相关微博聚类，抽取事件标题/摘要/涉及公司与技术，输出热度评分与**可信度评分**、行业影响与**企业应用机会**，分类固定枚举（模型发布/产品发布/公司动态/融资/政策/技术突破/企业案例/行业趋势）
+- **AI 产品声量雷达**：内置国内外 AI 产品库（豆包/DeepSeek/通义/Kimi/文心/元宝/智谱、ChatGPT/Claude/Gemini/Copilot/Perplexity），统计提及量、互动热度、增长率并自动关联事件，回答"谁在涨、为什么涨"
+- **AI 技术趋势雷达**：近 7 天 vs 近 30 天对比，识别 Agent、多模态、AI 编程、具身智能等方向的升温/稳定/下降，并给出企业落地机会
+- **AI 行业日报**：流水线每日自动整合事件/产品/趋势，LLM 生成三大事件、趋势变化、企业应用建议与今日总结
+- **自动化流水线**：采集→事件→产品→趋势→日报，运行锁防并发、分步重试、健康检查、日报质量评分，**默认分析"前一天全天"完整数据**
+
+### 💼 AI 销售情报助手（v1.1）
+- 行业机会识别 + 客户匹配，把 AI 趋势映射到制造业/互联网/教育/医疗等行业的可落地场景
+- 客户 AI 画像、跟进记录 AI 总结、AI 机会评分、成交概率预测与推进策略
+- 销售漏斗分析（各阶段客户数/金额/转化率）、今日重点客户与销售话术生成
+- 飞书机器人销售晨报、客户超期跟进提醒、多维表客户同步（未配置时自动降级，不影响主流程）
+
 ### 🔌 API 接口服务
-- 5 个 RESTful API 接口
+- 覆盖基础数据、AI 行业情报、销售智能、流水线管理的 RESTful API
 - API Key 认证 + 限流保护
 - Nginx 内部代理安全机制
 - 支持第三方系统集成
@@ -213,11 +228,13 @@ pip install -r requirements.txt
 
 # 配置环境变量
 cp .env.example .env
-# 编辑 .env，配置数据库连接、API Key 等
+# 编辑 .env，配置 DATABASE_URL（TiDB/MySQL）与 LLM_API_KEY
 
-# 启动服务
-uvicorn main:app --host 0.0.0.0 --port 8000
+# 启动服务（在 backend 目录下，模块名为 step7_api_service.main）
+uvicorn step7_api_service.main:app --host 0.0.0.0 --port 8000
 ```
+
+> 后端目录结构、环境变量与每日流水线详见 [backend/README.md](backend/README.md)。
 
 #### 前端部署
 ```bash
@@ -283,20 +300,24 @@ After=network.target
 [Service]
 User=www-data
 WorkingDirectory=/opt/weibo-analytics/backend
-ExecStart=/usr/bin/uvicorn main:app --host 127.0.0.1 --port 8000
+ExecStart=/usr/bin/uvicorn step7_api_service.main:app --host 127.0.0.1 --port 8000
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
 ```
 
-#### 定时采集任务
+#### 定时任务（生产推荐 systemd 长驻）
+生产环境用 `weibo-scheduler.service` 长驻，北京时间每天 08:00 自动采集并运行 AI 情报流水线，**分析口径为"前一天全天"完整数据**：
+```ini
+[Service]
+WorkingDirectory=/opt/weibo-analytics/backend
+ExecStart=/path/to/python step9_scheduler/scheduler.py --daemon
+Restart=always
+```
+也可手动补跑指定日期（幂等，会先清理当日 AI 结果再重算）：
 ```bash
-# 编辑 crontab
-crontab -e
-
-# 每天 08:00 执行数据采集
-0 8 * * * cd /opt/weibo-analytics/backend && python scheduler.py >> /var/log/weibo-cron.log 2>&1
+python step7_api_service/daily_ai_pipeline.py --date 2026-09-18 --skip collect
 ```
 
 ## 📚 API 文档
@@ -430,6 +451,27 @@ GET /api/keyword-trend?keyword=AI&days=30
 }
 ```
 
+#### AI 行业情报与销售智能接口（v1.1）
+```
+# 行业情报三层模型
+GET /api/events?date=&category=&min_confidence=     # AI 热点事件
+GET /api/products?date=                             # AI 产品声量排行
+GET /api/products/trend?product=&days=              # 产品声量趋势
+GET /api/trends?level=rising                        # 技术趋势雷达
+GET /api/reports                                    # AI 行业日报列表
+GET /api/reports/{date}                             # 指定日期日报
+
+# 自动化流水线
+POST /api/pipeline/run                              # 手动执行（默认分析前一天）
+GET  /api/pipeline/status | /logs | /health | /report-quality
+
+# 销售智能
+GET /api/sales/opportunities                        # 销售机会
+GET /api/sales-dashboard/overview|customers|risk|opportunities|trends
+GET /api/sales-prediction/customers|funnel|reviews  # 成交预测/漏斗/复盘
+GET /api/workspace/customers | /today-tasks         # 客户中心/今日任务
+```
+
 ### 限流策略
 - 外部 API (`/api/`): 30次/分钟，突发10次
 - 前端代理 (`/app-api/`): 60次/分钟，突发20次
@@ -520,33 +562,42 @@ AI情感分析结果，正面/中性/负面分布，负面观点TOP排行，ECha
 
 ```
 weibo-analytics/
-├── frontend/                    # 前端项目
-│   ├── index.html              # 主入口
-│   ├── style.css               # 样式文件
-│   ├── app.js                  # 应用逻辑
-│   └── favicon.svg             # 网站图标
-├── backend/                     # 后端项目
-│   ├── main.py                 # FastAPI 主应用
-│   ├── requirements.txt        # Python 依赖
-│   ├── scheduler.py            # 定时采集任务
-│   ├── models/                 # 数据模型
-│   ├── services/               # 业务逻辑
-│   └── utils/                  # 工具函数
-├── docs/                        # 项目文档
-│   ├── images/                 # 项目截图
-│   ├── test-report.md          # 测试报告
-│   ├── release-report.md       # 发布报告
-│   └── api-docs.md             # API 详细文档
-├── deploy/                      # 部署配置
-│   ├── nginx.conf              # Nginx 配置
-│   ├── weibo.service           # Systemd 服务
-│   └── crontab.txt             # 定时任务
-├── README.md                    # 项目说明
-├── LICENSE                      # 开源协议
-└── .gitignore                   # Git 忽略
+├── frontend/                       # 纯静态前端（无构建，直接托管）
+│   ├── index.html                 # 主入口（Hash 路由 SPA）
+│   ├── style.css                  # 样式（含响应式）
+│   └── app.js                     # 全部页面与交互逻辑
+├── backend/
+│   ├── requirements.txt           # Python 依赖
+│   ├── .env.example                # 环境变量样例（数据库/LLM/飞书）
+│   ├── README.md                   # 后端部署与流水线说明
+│   ├── step7_api_service/          # FastAPI 主服务
+│   │   ├── main.py / config.py / database.py / auth.py
+│   │   ├── event_analyzer.py / product_analyzer.py / trend_analyzer.py
+│   │   ├── daily_ai_pipeline.py / daily_report_generator.py
+│   │   ├── *_agent.py / sales_*.py  # 销售智能与各类 AI Agent
+│   │   └── routers/                # events/products/trends/reports/sales/...
+│   └── step9_scheduler/            # 每日定时调度（北京 08:00，分析前一天全天）
+│       ├── scheduler.py / tenant_runner.py / report_sender.py
+│       └── config.py
+├── docs/
+│   ├── images/                     # 项目截图
+│   └── RELEASE_NOTES_*.md          # 版本发布说明
+├── README.md
+├── LICENSE
+└── .gitignore                      # 已排除 .env / venv / __pycache__
 ```
 
+> 注：微博采集爬虫（step1）与 `agent_client`（step8/step10）属独立数据采集链路，未包含在开源精简版中；配置好数据库后，AI 分析与 API 服务可独立运行。
+
 ## 📋 版本历史
+
+### v1.1.0 (2026-09-19)
+- 🆕 **AI 行业情报三层模型**：热点事件自动发现（热度+可信度+企业机会+分类枚举）、AI 产品声量雷达、技术趋势雷达（7 天 vs 30 天）
+- 🆕 **每日自动化流水线**：采集→事件→产品→趋势→日报，运行锁、分步重试、健康检查、日报质量评分；**分析口径改为"北京前一天全天"**，解决清晨样本不足导致的 0 产出
+- 🆕 **AI 销售情报助手**：行业机会、客户画像、AI 机会评分、成交概率预测、销售漏斗、话术生成与飞书晨报/提醒
+- ⚡ 6 个慢接口性能优化（线程池并行 + 缓存），日报接口冷启动 11.3s→1.6s
+- 🐛 修复快速切页异步竞态、事件/产品数据新鲜度回退、移动端宽表横向滚动
+- 🔓 首次开源后端源码（FastAPI），密钥全部走环境变量，无任何硬编码凭证
 
 ### v1.0.1-hotfix (2026-09-15)
 - 🔧 **紧急修复**：AI日报页面数据真实性问题

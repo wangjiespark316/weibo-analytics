@@ -689,8 +689,10 @@ body {
 }
 
 /* ========== 表格 ========== */
-.table-wrapper {
+.table-wrapper,
+.table-container {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 table {
@@ -1240,3 +1242,67 @@ tbody tr:hover td {
     display: none;
   }
 }
+
+/* 销售驾驶舱样式 */
+.metric-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+.metric-card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 12px; position: relative; }
+.metric-icon { width: 48px; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.metric-info { flex: 1; }
+.metric-value { font-size: 28px; font-weight: 600; color: #1e293b; }
+.metric-label { font-size: 13px; color: #64748b; margin-top: 4px; }
+.metric-trend { position: absolute; top: 12px; right: 12px; font-size: 12px; padding: 2px 8px; border-radius: 4px; }
+.metric-trend.up { background: #dcfce7; color: #16a34a; }
+.metric-trend.down { background: #fee2e2; color: #dc2626; }
+.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.dashboard-card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.dashboard-card.full-width { grid-column: 1 / -1; }
+.dashboard-card h3 { margin: 0 0 16px 0; font-size: 16px; color: #1e293b; }
+.stage-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.stage-name { width: 80px; font-size: 13px; color: #475569; }
+.stage-bar { flex: 1; height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+.stage-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+.stage-count { width: 50px; text-align: right; font-size: 13px; color: #64748b; }
+.industry-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
+.industry-name { font-size: 14px; color: #334155; }
+.industry-count { font-size: 14px; color: #64748b; }
+.customer-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; }
+.customer-item:hover { background: #f8fafc; }
+.customer-rank { width: 24px; height: 24px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #64748b; }
+.customer-info { flex: 1; }
+.customer-name { font-size: 14px; color: #1e293b; font-weight: 500; }
+.customer-meta { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+.customer-amount { font-size: 14px; color: #0d9488; font-weight: 600; }
+.risk-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+.risk-icon { font-size: 16px; }
+.risk-info { flex: 1; }
+.risk-name { font-size: 14px; color: #1e293b; font-weight: 500; }
+.risk-reason { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+.suggestion-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+.suggestion-num { width: 24px; height: 24px; border-radius: 50%; background: #0d9488; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+.suggestion-text { font-size: 14px; color: #334155; line-height: 1.6; }
+@media (max-width: 768px) { .metric-cards { grid-template-columns: repeat(2, 1fr); } .dashboard-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .prediction-summary, .funnel-summary { grid-template-columns: repeat(2, 1fr); } }
+
+.prediction-summary, .funnel-summary { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+.summary-card { background: #fff; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.summary-value { font-size: 32px; font-weight: 700; color: #0D9488; }
+.summary-label { font-size: 13px; color: #64748B; margin-top: 4px; }
+.progress-bar { width: 100px; height: 8px; background: #E2E8F0; border-radius: 4px; display: inline-block; vertical-align: middle; }
+.progress-fill { height: 100%; border-radius: 4px; }
+.progress-fill.level-high { background: #16A34A; }
+.progress-fill.level-medium { background: #CA8A04; }
+.progress-fill.level-low { background: #DC2626; }
+.progress-text { margin-left: 8px; font-size: 13px; font-weight: 600; }
+.badge.level-high { background: #DCFCE7; color: #166534; }
+.badge.level-medium { background: #FEF9C3; color: #854D0E; }
+.badge.level-low { background: #FEE2E2; color: #991B1B; }
+.factors { font-size: 12px; color: #64748B; max-width: 200px; }
+.factors.risk { color: #DC2626; }
+.funnel-stage { margin-bottom: 20px; }
+.funnel-label { font-weight: 600; margin-bottom: 6px; color: #1E293B; }
+.funnel-bar-container { width: 100%; height: 32px; background: #F1F5F9; border-radius: 6px; overflow: hidden; }
+.funnel-bar { height: 100%; border-radius: 6px; }
+.funnel-meta { font-size: 12px; color: #64748B; margin-top: 4px; }
+.review-actions { margin-bottom: 16px; }
+.review-card { margin-bottom: 16px; }
+.markdown-content { line-height: 1.8; }

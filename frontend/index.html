@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>微博智能分析平台</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="stylesheet" href="/style.css?v=20260915e">
+  <link rel="stylesheet" href="/style.css?v=20260919a">
 </head>
 <body>
   <div id="app">
@@ -144,6 +144,75 @@
     <div class="drawer-body" id="drawerBody"></div>
   </div>
 
-  <script src="/app.js?v=20260915e"></script>
+  
+  <!-- 双运行模式：默认旧版稳定，?mode=modular启用模块化架构 -->
+  <script>
+    // 检测运行模式
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    window.APP_MODE = mode === 'modular' ? 'modular' : 'legacy';
+    console.log('[Bootstrap] Running in', window.APP_MODE, 'mode');
+    
+    if (window.APP_MODE === 'modular') {
+      // 模块化模式：加载核心模块 + API模块 + 页面模块 + 启动器
+      document.write(`
+        <!-- 核心模块 -->
+        <script src="/src/core/app-context.js"><\/script>
+        <script src="/src/core/module-loader.js"><\/script>
+        <script src="/src/core/error-handler.js"><\/script>
+        
+        <!-- API模块 -->
+        <script src="/src/api/base.js"><\/script>
+        <script src="/src/api/events.js"><\/script>
+        <script src="/src/api/products.js"><\/script>
+        <script src="/src/api/trends.js"><\/script>
+        <script src="/src/api/reports.js"><\/script>
+        <script src="/src/api/sales.js"><\/script>
+        <script src="/src/api/workspace.js"><\/script>
+        <script src="/src/api/weibo.js"><\/script>
+        
+        <!-- 组件模块 -->
+        <script src="/src/components/empty-state.js"><\/script>
+        <script src="/src/components/error-state.js"><\/script>
+        
+        <!-- 工具和状态 -->
+        <script src="/src/utils/page_cache.js"><\/script>
+        <script src="/src/store.js"><\/script>
+        
+        <!-- 页面模块 -->
+        <script src="/src/pages/dashboard.js"><\/script>
+        <script src="/src/pages/weibo_data.js"><\/script>
+        <script src="/src/pages/user_data.js"><\/script>
+        <script src="/src/pages/hot_data.js"><\/script>
+        <script src="/src/pages/sentiment.js"><\/script>
+        <script src="/src/pages/trend.js"><\/script>
+        <script src="/src/pages/daily_report.js"><\/script>
+        <script src="/src/pages/collect_task.js"><\/script>
+        <script src="/src/pages/analyze_task.js"><\/script>
+        <script src="/src/pages/cron_task.js"><\/script>
+        <script src="/src/pages/api_key.js"><\/script>
+        <script src="/src/pages/user_mgmt.js"><\/script>
+        <script src="/src/pages/permission.js"><\/script>
+        <script src="/src/pages/events.js"><\/script>
+        <script src="/src/pages/products.js"><\/script>
+        <script src="/src/pages/trends.js"><\/script>
+        <script src="/src/pages/reports.js"><\/script>
+        <script src="/src/pages/sales.js"><\/script>
+        <script src="/src/pages/workspace_customers.js"><\/script>
+        <script src="/src/pages/workspace_customer_detail.js"><\/script>
+        <script src="/src/pages/workspace_tasks.js"><\/script>
+        
+        <!-- 旧版app.js（提供Components、Router等基础对象） -->
+        <script src="/app.js?v=20260919a"><\/script>
+        
+        <!-- 模块化启动器 -->
+        <script src="/app.modular.js"><\/script>
+      `);
+    } else {
+      // 默认模式：加载旧版app.js（稳定）
+      document.write('<script src="/app.js?v=20260919a"><\/script>');
+    }
+  </script>
+
 </body>
 </html>

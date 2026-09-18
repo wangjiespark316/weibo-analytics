@@ -48,7 +48,105 @@ const API = {
   // 关键词趋势
   async getKeywordTrend(keyword, days = 30) {
     return this.request(`/keyword-trend?keyword=${encodeURIComponent(keyword)}&days=${days}`);
-  }
+  },
+  // 销售工作台API
+  async getCustomers(industry=null, stage=null, level=null) {
+    let url = '/workspace/customers?';
+    if (industry) url += 'industry=' + encodeURIComponent(industry) + '&';
+    if (stage) url += 'stage=' + encodeURIComponent(stage) + '&';
+    if (level) url += 'level=' + encodeURIComponent(level) + '&';
+    return this.request(url);
+  },
+  
+  async getCustomerDetail(id) {
+    return this.request('/workspace/customers/' + id);
+  },
+  
+  async createFollow(data) {
+    return this.request('/workspace/follow', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+  
+  async generateCustomerProfile(id) {
+    return this.request('/workspace/profile/' + id, { method: 'POST' });
+  },
+  
+  async analyzeFollows(id) {
+    return this.request('/workspace/follow-analyze/' + id, { method: 'POST' });
+  },
+  
+  async getTodayTasks() {
+    return this.request('/workspace/today-tasks');
+  },
+
+  // AI情报API
+  async getEvents(limit = 10, category = null, minConfidence = null) {
+    let url = '/events?limit=' + limit;
+    if (category) url += '&category=' + encodeURIComponent(category);
+    if (minConfidence) url += '&min_confidence=' + minConfidence;
+    return this.request(url);
+  },
+  
+  async getEventDetail(id) {
+    return this.request('/events/' + id);
+  },
+  
+  async getProducts(limit = 10) {
+    return this.request('/products?limit=' + limit);
+  },
+  
+  async getProductTrend(product, days = 30) {
+    return this.request('/products/trend?product=' + encodeURIComponent(product) + '&days=' + days);
+  },
+  
+  async getTrends(limit = 10, level = null) {
+    let url = '/trends?limit=' + limit;
+    if (level) url += '&level=' + encodeURIComponent(level);
+    return this.request(url);
+  },
+  
+  async getTrendHistory(technology, days = 30) {
+    return this.request('/trends/history?technology=' + encodeURIComponent(technology) + '&days=' + days);
+  },
+  
+  async getReports(limit = 10) {
+    return this.request('/reports?limit=' + limit);
+  },
+  
+  async getReportDetail(date) {
+    return this.request('/reports/' + date);
+  },
+  
+  async getSalesOpportunities(priority = null, industry = null) {
+    let url = '/sales/opportunities?';
+    if (priority) url += 'priority=' + encodeURIComponent(priority) + '&';
+    if (industry) url += 'industry=' + encodeURIComponent(industry) + '&';
+    return this.request(url);
+  },
+  
+  async generateSalesScript(data) {
+    return this.request('/sales/script', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+  
+  async getPipelineStatus() {
+    return this.request('/pipeline/status');
+  },
+  
+  async getPipelineLogs(date = null) {
+    let url = '/pipeline/logs';
+    if (date) url += '?date=' + date;
+    return this.request(url);
+  },
+  
+  async recalcCustomerScore(id) {
+    return this.request('/workspace/score/' + id, { method: 'POST' });
+  },
+
 };
 
 // ========== 菜单配置 ==========
@@ -85,6 +183,26 @@ const MENU_CONFIG = [
       { key: 'user-mgmt', label: '用户管理', icon: 'user' },
       { key: 'permission', label: '权限管理', icon: 'shield' }
     ]
+  },
+  {
+    key: 'ai-intel', label: 'AI情报', icon: 'ai',
+    children: [
+      { key: 'events', label: '事件中心', icon: 'fire' },
+      { key: 'products', label: '产品雷达', icon: 'chart' },
+      { key: 'trends', label: '技术趋势', icon: 'trend' },
+      { key: 'reports', label: '日报中心', icon: 'report' },
+      { key: 'sales', label: '销售机会', icon: 'task' }
+    ]
+  },
+  {
+    key: 'sales-workspace',
+    label: '销售工作台',
+    icon: 'briefcase',
+    children: [
+      { key: 'sales-dashboard', label: '销售驾驶舱', icon: 'dashboard' },
+      { key: 'workspace-customers', label: '客户中心', icon: 'users' },
+      { key: 'workspace-tasks', label: '今日任务', icon: 'calendar' }
+    ]
   }
 ];
 
@@ -111,27 +229,66 @@ const ICONS = {
 };
 
 // ========== 路由系统 ==========
+const MENU_STORAGE_KEY = 'weibo_analytics_expanded_menu';
+
+function loadExpandedGroups() {
+  try {
+    const saved = localStorage.getItem(MENU_STORAGE_KEY);
+    if (saved) {
+      return new Set(JSON.parse(saved));
+    }
+  } catch (e) {}
+  // 默认展开数据中心和AI分析
+  return new Set(['data', 'ai']);
+}
+
+function saveExpandedGroups() {
+  try {
+    localStorage.setItem(MENU_STORAGE_KEY, JSON.stringify([...Router.expandedGroups]));
+  } catch (e) {}
+}
+
 const Router = {
   currentRoute: 'dashboard',
-  expandedGroups: new Set(['data', 'ai']),
+  expandedGroups: loadExpandedGroups(),
   
   init() {
     this.renderMenu();
     
     // 读取当前hash，实现路由状态保持（刷新页面后保持当前页面）
-    const hash = window.location.hash.slice(1) || 'dashboard';
+    let hash = window.location.hash.slice(1) || 'dashboard';
+    // 处理带查询参数的URL，如 #workspace-customer-detail?id=1
+    let routeParams = {};
+    if (hash.includes('?')) {
+      const parts = hash.split('?');
+      hash = parts[0];
+      const params = new URLSearchParams(parts[1]);
+      params.forEach((value, key) => {
+        routeParams[key] = value;
+      });
+    }
     const validRoutes = Object.keys(PAGE_INFO);
     const initialRoute = validRoutes.includes(hash) ? hash : 'dashboard';
-    this.navigate(initialRoute);
+    this.navigate(initialRoute, routeParams);
     
     // 监听 hash 变化
     window.addEventListener('hashchange', () => {
-      const hash = window.location.hash.slice(1) || 'dashboard';
-      this.navigate(hash, false);
+      let hash = window.location.hash.slice(1) || 'dashboard';
+      let routeParams = {};
+      if (hash.includes('?')) {
+        const parts = hash.split('?');
+        hash = parts[0];
+        const params = new URLSearchParams(parts[1]);
+        params.forEach((value, key) => {
+          routeParams[key] = value;
+        });
+      }
+      this.navigate(hash, routeParams, false);
     });
   },
   
-  navigate(route, updateHash = true) {
+  navigate(route, params = null, updateHash = true) {
+    if (params) this.currentParams = params;
     this.currentRoute = route;
     if (updateHash) {
       window.location.hash = route;
@@ -156,6 +313,7 @@ const Router = {
       this.expandedGroups.clear();
       this.expandedGroups.add(groupKey);
     }
+    saveExpandedGroups();
     this.renderMenu();
   },
   
@@ -248,7 +406,8 @@ const Router = {
   }
 };
 
-// ========== 页面配置 ==========
+
+
 const PAGE_INFO = {
   'dashboard': { title: '首页', breadcrumb: ['首页'], desc: '微博智能分析平台数据总览，实时展示采集数据、情感分析与系统运行状态' },
   'weibo-data': { title: '微博数据', breadcrumb: ['数据中心', '微博数据'], desc: '浏览和检索已采集的微博内容，支持关键词搜索、分类筛选与详情查看' },
@@ -262,7 +421,20 @@ const PAGE_INFO = {
   'cron-task': { title: '定时任务', breadcrumb: ['任务中心', '定时任务'], desc: '系统内置定时任务配置，展示采集、分析、报告生成的执行时间与周期' },
   'api-key': { title: 'API Key', breadcrumb: ['系统管理', 'API Key'], desc: '外部API集成认证管理，前端通过内部代理自动鉴权，第三方调用需使用API Key' },
   'user-mgmt': { title: '用户管理', breadcrumb: ['系统管理', '用户管理'], desc: '企业版多用户体系规划，支持用户登录、生命周期管理、组织架构与通知中心' },
-  'permission': { title: '权限管理', breadcrumb: ['系统管理', '权限管理'], desc: '企业版细粒度权限体系规划，支持角色权限、数据权限、多租户与操作审计' }
+  'permission': { title: '权限管理', breadcrumb: ['系统管理', '权限管理'], desc: '企业版细粒度权限体系规划，支持角色权限、数据权限、多租户与操作审计' },
+  'events': { title: 'AI事件中心', breadcrumb: ['AI情报', '事件中心'], desc: '自动发现AI行业重要事件，展示热度、可信度与企业影响分析' },
+  'products': { title: 'AI产品雷达', breadcrumb: ['AI情报', '产品雷达'], desc: '追踪AI产品声量变化，发现正在增长的产品与背后原因' },
+  'trends': { title: 'AI技术趋势', breadcrumb: ['AI情报', '技术趋势'], desc: '分析AI技术发展方向，识别正在升温的新技术与企业落地机会' },
+  'reports': { title: 'AI日报中心', breadcrumb: ['AI情报', '日报中心'], desc: 'AI自动生成每日行业情报报告，包含事件、产品、趋势与企业建议' },
+  'sales': { title: 'AI销售机会', breadcrumb: ['AI情报', '销售机会'], desc: '基于AI行业变化自动识别销售机会，推荐客户与沟通话术' },
+  'sales-dashboard': { title: '销售驾驶舱', breadcrumb: ['销售工作台', '销售驾驶舱'], desc: '实时掌握销售数据' },
+  'workspace-customers': { title: '客户中心', breadcrumb: ['销售工作台', '客户中心'], desc: '管理客户信息' },
+  'workspace-customer-detail': { title: '客户详情', breadcrumb: ['销售工作台', '客户中心', '客户详情'], desc: '查看客户详细信息、AI画像与跟进记录' },
+  'workspace-tasks': { title: '今日任务', breadcrumb: ['销售工作台', '今日任务'], desc: 'AI智能生成今日销售重点任务与行动建议' },
+  'sales-prediction': { title: 'AI销售预测', breadcrumb: ['销售工作台', 'AI销售预测'], desc: 'AI预测客户成交概率，生成推进策略' },
+  'sales-funnel': { title: '销售漏斗', breadcrumb: ['销售工作台', '销售漏斗'], desc: '分析销售阶段转化与商机金额' },
+  'sales-review': { title: 'AI销售复盘', breadcrumb: ['销售工作台', 'AI销售复盘'], desc: '自动生成销售日报周报月报' },
+
 };
 
 // ========== 通用组件 ==========
@@ -323,6 +495,22 @@ const Components = {
         <div class="empty-state-text">${text}</div>
       </div>
     `;
+  },
+  // Markdown渲染（全局复用）
+  renderMarkdown(md) {
+    if (!md) return '<p style="color:var(--text-secondary);">暂无内容</p>';
+    let html = md;
+    html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    html = html.replace(/^### (.*$)/gm, '<h3 style="font-size:16px;font-weight:600;margin:18px 0 10px;color:var(--text-primary);">$1</h3>');
+    html = html.replace(/^## (.*$)/gm, '<h2 style="font-size:18px;font-weight:600;margin:22px 0 12px;color:var(--text-primary);padding-bottom:8px;border-bottom:2px solid var(--primary-light);">$1</h2>');
+    html = html.replace(/^# (.*$)/gm, '<h1 style="font-size:22px;font-weight:700;margin:0 0 16px;color:var(--text-primary);">$1</h1>');
+    html = html.replace(/^&gt; (.*$)/gm, '<div style="padding:8px 16px;margin:8px 0;background:var(--bg);border-left:3px solid var(--primary);color:var(--text-secondary);font-size:13px;">$1</div>');
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong style="font-weight:600;">$1</strong>');
+    html = html.replace(/^- (.*$)/gm, '<li style="margin:4px 0;padding-left:8px;">$1</li>');
+    html = html.replace(/^\d+\. (.*$)/gm, '<li style="margin:4px 0;padding-left:8px;">$1</li>');
+    html = html.replace(/\n\n/g, '</p><p style="margin:8px 0;">');
+    html = html.replace(/\n/g, '<br>');
+    return '<div class="markdown-content" style="line-height:1.8;color:#334155;font-size:14px;">' + html + '</div>';
   },
   
   // 分页
@@ -414,14 +602,34 @@ function closeDropdowns() {
 }
 
 // ========== 通知管理 ==========
+const NOTIFICATION_STORAGE_KEY = 'weibo_analytics_read_notifications';
+
+function loadReadNotifications() {
+  try {
+    const saved = localStorage.getItem(NOTIFICATION_STORAGE_KEY);
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  } catch (e) {
+    return new Set();
+  }
+}
+
+function saveReadNotifications() {
+  try {
+    localStorage.setItem(NOTIFICATION_STORAGE_KEY, JSON.stringify([...notificationState.readIds]));
+  } catch (e) {
+    console.error('保存通知状态失败:', e);
+  }
+}
+
 const notificationState = {
-  readIds: new Set(),
+  readIds: loadReadNotifications(),
   totalCount: 3
 };
 
 function markNotificationAsRead(id) {
   if (notificationState.readIds.has(id)) return;
   notificationState.readIds.add(id);
+  saveReadNotifications();
   
   // 更新该通知项的样式
   const item = document.querySelector(`.notification-item[data-id="${id}"]`);
@@ -442,6 +650,7 @@ function markAllNotificationsAsRead() {
     const dot = item.querySelector('.notification-unread-dot');
     if (dot) dot.style.display = 'none';
   });
+  saveReadNotifications();
   
   updateNotificationBadge();
   showToast('已全部标记为已读', 'success');
@@ -470,6 +679,19 @@ function updateNotificationBadge() {
       unreadText.textContent = '全部已读';
     }
   }
+}
+
+function initNotificationReadState() {
+  // 根据localStorage中的已读状态，更新通知项的UI样式
+  document.querySelectorAll('.notification-item').forEach(item => {
+    const id = parseInt(item.dataset.id);
+    if (notificationState.readIds.has(id)) {
+      item.classList.add('read');
+      const dot = item.querySelector('.notification-unread-dot');
+      if (dot) dot.style.display = 'none';
+    }
+  });
+  updateNotificationBadge();
 }
 
 // 点击页面其他地方时关闭下拉菜单
@@ -530,61 +752,6 @@ const Pages = {
       const totalAnalyzed = sentimentData.total_analyzed || sentimentData.sample_size || 0;
       
       container.innerHTML = Components.pageHeader('dashboard') + `
-        <!-- 产品介绍横幅 -->
-        <div style="background:linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);border-radius:12px;padding:28px 32px;margin-bottom:20px;color:white;position:relative;overflow:hidden;">
-          <div style="position:absolute;right:-20px;top:-20px;font-size:120px;opacity:0.1;">📊</div>
-          <div style="position:relative;z-index:1;">
-            <div style="font-size:22px;font-weight:700;margin-bottom:6px;">微博智能分析平台</div>
-            <div style="font-size:14px;opacity:0.9;margin-bottom:16px;">基于 AI 的微博舆情分析与热点洞察平台，助力企业实时掌握市场动态与用户情感</div>
-            <div style="display:flex;gap:12px;flex-wrap:wrap;">
-              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;">🤖 AI情感分析</span>
-              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;">🔥 热点趋势追踪</span>
-              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;">📝 每日AI报告</span>
-              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;">👥 KOL影响力分析</span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 核心能力 -->
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;">
-          ${[
-            {icon:'📡', title:'数据采集', desc:'自动采集微博热门内容', route:'weibo-data'},
-            {icon:'📈', title:'热点趋势', desc:'实时追踪关键词热度变化', route:'trend'},
-            {icon:'💭', title:'舆情分析', desc:'AI识别正面/负面情感倾向', route:'sentiment'},
-            {icon:'🤖', title:'AI日报', desc:'每日自动生成舆情分析报告', route:'daily-report'},
-            {icon:'👥', title:'用户分析', desc:'KOL影响力排行与用户画像', route:'user-data'}
-          ].map(cap => `
-            <div onclick="Router.navigate('${cap.route}')" style="background:white;border:1px solid var(--border-light);border-radius:10px;padding:16px;cursor:pointer;transition:var(--transition);" onmouseover="this.style.boxShadow='var(--shadow-card-hover)';this.style.borderColor='var(--primary)'" onmouseout="this.style.boxShadow='var(--shadow-card)';this.style.borderColor='var(--border-light)'">
-              <div style="font-size:24px;margin-bottom:8px;">${cap.icon}</div>
-              <div style="font-size:13px;font-weight:600;margin-bottom:2px;">${cap.title}</div>
-              <div style="font-size:11px;color:var(--text-secondary);line-height:1.4;">${cap.desc}</div>
-            </div>
-          `).join('')}
-        </div>
-        
-        <!-- Demo引导流程 -->
-        <div style="background:white;border:1px solid var(--border-light);border-radius:10px;padding:20px 24px;margin-bottom:20px;">
-          <div style="font-size:14px;font-weight:600;margin-bottom:16px;color:var(--text);">🔄 产品工作流程</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-            ${[
-              {step:'1', title:'数据采集', desc:'每天自动采集微博', icon:'📡'},
-              {step:'2', title:'数据清洗', desc:'去重、分类、结构化', icon:'🧹'},
-              {step:'3', title:'AI分析', desc:'情感分析+关键词提取', icon:'🤖'},
-              {step:'4', title:'热点发现', desc:'识别热议话题与趋势', icon:'🔥'},
-              {step:'5', title:'报告生成', desc:'自动输出每日洞察', icon:'📊'}
-            ].map((item, idx) => `
-              <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:120px;">
-                <div style="text-align:center;">
-                  <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--primary-light),var(--primary-lighter));display:grid;place-items:center;font-size:18px;margin:0 auto 4px;">${item.icon}</div>
-                  <div style="font-size:12px;font-weight:600;">${item.title}</div>
-                  <div style="font-size:10px;color:var(--text-tertiary);">${item.desc}</div>
-                </div>
-                ${idx < 4 ? '<div style="color:var(--text-tertiary);font-size:18px;margin-top:-20px;">→</div>' : ''}
-              </div>
-            `).join('')}
-          </div>
-        </div>
-        
         <div class="metrics-row">
           ${Components.metricCard('热门微博数', weiboCount.toLocaleString(), '条', '最新采集数据', 'up', 'blue')}
           ${Components.metricCard('分析样本数', totalAnalyzed.toLocaleString(), '条', 'AI情感分析', 'up', 'orange')}
@@ -657,55 +824,98 @@ const Pages = {
         
         <div class="card">
           <div class="card-header">
-            <span class="card-title">最近任务</span>
+            <span class="card-title">系统运行状态</span>
             <div class="card-extra">
-              ${Components.button('查看全部', 'btn-sm', '', "Router.navigate('collect-task')")}
+              ${Components.tag('服务正常', 'green')}
             </div>
           </div>
-          <div class="card-body" style="padding:0;">
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>任务名称</th>
-                    <th>类型</th>
-                    <th>状态</th>
-                    <th>执行时间</th>
-                    <th>耗时</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>微博数据采集 - AI行业</td>
-                    <td>${Components.tag('采集', 'blue')}</td>
-                    <td>${Components.tag('运行中', 'green')}</td>
-                    <td>2026-09-13 08:00:00</td>
-                    <td>进行中</td>
-                  </tr>
-                  <tr>
-                    <td>AI情感分析 - 全量数据</td>
-                    <td>${Components.tag('分析', 'orange')}</td>
-                    <td>${Components.tag('已完成', 'blue')}</td>
-                    <td>2026-09-13 07:30:00</td>
-                    <td>12分30秒</td>
-                  </tr>
-                  <tr>
-                    <td>热点话题聚类</td>
-                    <td>${Components.tag('分析', 'orange')}</td>
-                    <td>${Components.tag('已完成', 'blue')}</td>
-                    <td>2026-09-13 07:00:00</td>
-                    <td>8分15秒</td>
-                  </tr>
-                  <tr>
-                    <td>每日报告生成</td>
-                    <td>${Components.tag('报告', 'green')}</td>
-                    <td>${Components.tag('已完成', 'blue')}</td>
-                    <td>2026-09-13 06:00:00</td>
-                    <td>3分45秒</td>
-                  </tr>
-                </tbody>
-              </table>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+              <div style="text-align:center;padding:16px;background:var(--bg);border-radius:8px;">
+                <div style="font-size:24px;margin-bottom:4px;">📡</div>
+                <div style="font-size:13px;font-weight:600;margin-bottom:2px;">数据采集</div>
+                <div style="font-size:11px;color:var(--text-secondary);">每天 08:00 自动执行</div>
+                <div style="margin-top:8px;">${Components.tag('正常运行', 'green')}</div>
+              </div>
+              <div style="text-align:center;padding:16px;background:var(--bg);border-radius:8px;">
+                <div style="font-size:24px;margin-bottom:4px;">🤖</div>
+                <div style="font-size:13px;font-weight:600;margin-bottom:2px;">AI分析</div>
+                <div style="font-size:11px;color:var(--text-secondary);">情感分析+热点提取</div>
+                <div style="margin-top:8px;">${Components.tag('正常运行', 'green')}</div>
+              </div>
+              <div style="text-align:center;padding:16px;background:var(--bg);border-radius:8px;">
+                <div style="font-size:24px;margin-bottom:4px;">📊</div>
+                <div style="font-size:13px;font-weight:600;margin-bottom:2px;">日报生成</div>
+                <div style="font-size:11px;color:var(--text-secondary);">每日自动生成报告</div>
+                <div style="margin-top:8px;">${Components.tag('今日已生成', 'green')}</div>
+              </div>
+              <div style="text-align:center;padding:16px;background:var(--bg);border-radius:8px;">
+                <div style="font-size:24px;margin-bottom:4px;">🔔</div>
+                <div style="font-size:13px;font-weight:600;margin-bottom:2px;">飞书推送</div>
+                <div style="font-size:11px;color:var(--text-secondary);">报告自动推送到飞书</div>
+                <div style="margin-top:8px;">${Components.tag('已配置', 'blue')}</div>
+              </div>
             </div>
+            <div style="margin-top:16px;padding:12px 16px;background:#ECFDF5;border-radius:8px;border-left:3px solid #10B981;">
+              <div style="font-size:12px;color:#065F46;">
+                <strong>系统说明：</strong>本平台采用定时任务架构，每天 08:00 自动执行微博数据采集、AI情感分析、热点提取和日报生成，并自动推送到飞书。任务执行记录可在调度日志中查看。
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 产品介绍横幅 -->
+        <div style="background:linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);border-radius:12px;padding:28px 32px;margin-bottom:20px;color:white;position:relative;overflow:hidden;">
+          <div style="position:absolute;right:-20px;top:-20px;font-size:120px;opacity:0.1;">📊</div>
+          <div style="position:relative;z-index:1;">
+            <div style="font-size:22px;font-weight:700;margin-bottom:6px;">微博智能分析平台</div>
+            <div style="font-size:14px;opacity:0.9;margin-bottom:16px;">基于 AI 的微博舆情分析与热点洞察平台，助力企业实时掌握市场动态与用户情感</div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;">🤖 AI情感分析</span>
+              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;">🔥 热点趋势追踪</span>
+              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;">📝 每日AI报告</span>
+              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;">👥 KOL影响力分析</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 核心能力 -->
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;">
+          ${[
+            {icon:'📡', title:'数据采集', desc:'自动采集微博热门内容', route:'weibo-data'},
+            {icon:'📈', title:'热点趋势', desc:'实时追踪关键词热度变化', route:'trend'},
+            {icon:'💭', title:'舆情分析', desc:'AI识别正面/负面情感倾向', route:'sentiment'},
+            {icon:'🤖', title:'AI日报', desc:'每日自动生成舆情分析报告', route:'daily-report'},
+            {icon:'👥', title:'用户分析', desc:'KOL影响力排行与用户画像', route:'user-data'}
+          ].map(cap => `
+            <div onclick="Router.navigate('${cap.route}')" style="background:white;border:1px solid var(--border-light);border-radius:10px;padding:16px;cursor:pointer;transition:var(--transition);" onmouseover="this.style.boxShadow='var(--shadow-card-hover)';this.style.borderColor='var(--primary)'" onmouseout="this.style.boxShadow='var(--shadow-card)';this.style.borderColor='var(--border-light)'">
+              <div style="font-size:24px;margin-bottom:8px;">${cap.icon}</div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:2px;">${cap.title}</div>
+              <div style="font-size:11px;color:var(--text-secondary);line-height:1.4;">${cap.desc}</div>
+            </div>
+          `).join('')}
+        </div>
+        
+        <!-- Demo引导流程 -->
+        <div style="background:white;border:1px solid var(--border-light);border-radius:10px;padding:20px 24px;margin-bottom:20px;">
+          <div style="font-size:14px;font-weight:600;margin-bottom:16px;color:var(--text);">🔄 产品工作流程</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+            ${[
+              {step:'1', title:'数据采集', desc:'每天自动采集微博', icon:'📡'},
+              {step:'2', title:'数据清洗', desc:'去重、分类、结构化', icon:'🧹'},
+              {step:'3', title:'AI分析', desc:'情感分析+关键词提取', icon:'🤖'},
+              {step:'4', title:'热点发现', desc:'识别热议话题与趋势', icon:'🔥'},
+              {step:'5', title:'报告生成', desc:'自动输出每日洞察', icon:'📊'}
+            ].map((item, idx) => `
+              <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:120px;">
+                <div style="text-align:center;">
+                  <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--primary-light),var(--primary-lighter));display:grid;place-items:center;font-size:18px;margin:0 auto 4px;">${item.icon}</div>
+                  <div style="font-size:12px;font-weight:600;">${item.title}</div>
+                  <div style="font-size:10px;color:var(--text-tertiary);">${item.desc}</div>
+                </div>
+                ${idx < 4 ? '<div style="color:var(--text-tertiary);font-size:18px;margin-top:-20px;">→</div>' : ''}
+              </div>
+            `).join('')}
           </div>
         </div>
       `;
@@ -1635,10 +1845,13 @@ const Pages = {
       
       try {
         const report = await API.getDailyReport();
+        // 快速切页竞态守卫：await期间若已离开日报页则放弃渲染，避免写入已失效DOM
+        if (Pages.currentPage !== Pages['daily-report']) return;
         const markdown = report?.content || report?.data?.content || '';
         const generatedAt = report?.generated_at || report?.data?.generated_at || '';
         
         const contentEl = container.querySelector('#daily-report-content');
+        if (!contentEl) return;
         if (markdown) {
           contentEl.innerHTML = renderMarkdown(markdown);
           if (generatedAt) {
@@ -1649,7 +1862,10 @@ const Pages = {
         }
       } catch (e) {
         console.error('日报加载失败:', e);
-        container.querySelector('#daily-report-content').innerHTML = '<div style="padding:40px;text-align:center;color:var(--danger);">日报加载失败，请刷新页面重试</div>';
+        const errEl = container.querySelector('#daily-report-content');
+        if (errEl && Pages.currentPage === Pages['daily-report']) {
+          errEl.innerHTML = '<div style="padding:40px;text-align:center;color:var(--danger);">日报加载失败，请刷新页面重试</div>';
+        }
       }
     }
   },
@@ -1831,9 +2047,9 @@ const Pages = {
     render(container) {
       Pages.currentPage = Pages['api-key'];
       
-      // 真实的API Key（系统中实际存在的）
-      const realApiKey = '34c053d2c4ae0c143e7208e542bbc2dfb3619364884e110b';
-      const maskedKey = realApiKey.substring(0, 8) + '...' + realApiKey.substring(realApiKey.length - 6);
+      // 安全要求：完整 API Key 仅保存在服务端（Nginx 内部代理注入），前端不持有、不展示完整值
+      // 仅保留末 4 位用于识别，不包含可用的完整密钥
+      const maskedKey = '••••••••••••••••110b';
       
       container.innerHTML = Components.pageHeader('api-key') + `
         <div class="card">
@@ -1871,7 +2087,7 @@ const Pages = {
                     <td style="font-size:13px;">2026-09-01</td>
                     <td>
                       <div class="table-actions">
-                        <button class="btn btn-link btn-sm" onclick="copyToClipboard('${realApiKey}')">复制</button>
+                        <button class="btn btn-link btn-sm" onclick="showToast('完整 API Key 由服务端安全管理，前端不展示；如需外部集成请联系管理员', 'info')">复制</button>
                       </div>
                     </td>
                   </tr>
@@ -1912,7 +2128,7 @@ const Pages = {
                 </div>
               </div>
               <div style="margin-bottom:12px;"><strong>请求方式：</strong>所有 API 均为 GET 请求</div>
-              <div style="margin-bottom:12px;"><strong>外部调用认证：</strong>在请求头中添加 <code style="background:var(--bg);padding:2px 6px;border-radius:4px;">X-API-Key: ${maskedKey}</code></div>
+              <div style="margin-bottom:12px;"><strong>外部调用认证：</strong>在请求头中添加 <code style="background:var(--bg);padding:2px 6px;border-radius:4px;">X-API-Key: &lt;你的API Key&gt;</code></div>
               <div style="margin-bottom:12px;"><strong>前端调用：</strong>无需携带 Key，直接请求 <code style="background:var(--bg);padding:2px 6px;border-radius:4px;">/app-api/xxx</code> 即可</div>
               <div style="margin-bottom:12px;"><strong>限流策略：</strong>外部API 30次/分钟，前端代理 60次/分钟</div>
               <div style="margin-bottom:12px;"><strong>可用接口（前端 /app-api/ 和外部 /api/ 通用）：</strong></div>
@@ -2072,10 +2288,627 @@ const Pages = {
         </div>
       `;
     }
-  }
+  },
+
+  // AI事件中心页面
+  'events': {
+    async render(container) {
+      Pages.currentPage = Pages['events'];
+      container.innerHTML = Components.pageHeader('events') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载AI事件中...</span></div>';
+      try {
+        const result = await API.getEvents(20);
+        const events = result.events || [];
+        const categoryMap = {
+          model_release: '模型发布',
+          product_launch: '产品发布',
+          company_news: '公司动态',
+          financing: '融资投资',
+          policy: '政策监管',
+          technology_breakthrough: '技术突破',
+          application_case: '企业应用',
+          industry_trend: '行业趋势'
+        };
+        
+        let html = Components.pageHeader('events');
+        html += '<div class="metrics-row">';
+        html += '<div class="metric-card"><div class="metric-value">' + events.length + '</div><div class="metric-label">事件总数</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">' + events.filter(e => (e.event_confidence || 0) >= 80).length + '</div><div class="metric-label">高可信度</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">' + events.filter(e => (e.heat_score || 0) >= 80).length + '</div><div class="metric-label">高热度</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">' + new Set(events.map(e => e.category)).size + '</div><div class="metric-label">事件分类</div></div>';
+        html += '</div>';
+        
+        if (events.length === 0) {
+          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">暂无AI事件数据，等待每日自动分析</div></div></div></div>';
+        } else {
+          html += '<div class="card"><div class="card-header"><h3>AI行业事件列表</h3><div style="font-size:13px;color:#999;font-weight:normal">数据日期：' + (result.date||'--') + '</div></div><div class="card-body">';
+          events.forEach((e, idx) => {
+            const conf = e.event_confidence || 0;
+            const heat = e.heat_score || 0;
+            const confColor = conf >= 80 ? '#27ae60' : conf >= 60 ? '#f39c12' : '#95a5a6';
+            html += '<div style="padding:16px 20px;border-bottom:1px solid #eee;display:flex;gap:16px">';
+            html += '<div style="font-size:24px;font-weight:bold;color:#0D9488;min-width:40px">' + (idx+1) + '</div>';
+            html += '<div style="flex:1">';
+            html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+            html += '<strong style="font-size:16px">' + (e.title || '未命名事件') + '</strong>';
+            html += '<span class="tag" style="background:#0D9488">' + (categoryMap[e.category] || e.category || '未分类') + '</span>';
+            html += '</div>';
+            html += '<p style="margin:4px 0;color:#666;font-size:14px">' + (e.summary || '') + '</p>';
+            html += '<div style="display:flex;gap:20px;margin-top:8px;font-size:13px">';
+            html += '<span>🔥 热度: <strong style="color:#e74c3c">' + heat + '</strong></span>';
+            html += '<span>✅ 可信度: <strong style="color:' + confColor + '">' + conf + '%</strong></span>';
+            if (e.companies && e.companies.length) {
+              html += '<span>🏢 涉及: ' + e.companies.slice(0,3).join(', ') + '</span>';
+            }
+            html += '</div>';
+            if (e.impact_analysis) {
+              html += '<p style="margin:8px 0 0;padding:8px 12px;background:#f8f9fa;border-radius:6px;font-size:13px;color:#555"><strong>行业影响:</strong> ' + e.impact_analysis + '</p>';
+            }
+            if (e.business_opportunity) {
+              html += '<p style="margin:4px 0 0;padding:8px 12px;background:#e8f5f3;border-radius:6px;font-size:13px;color:#0D9488"><strong>企业机会:</strong> ' + e.business_opportunity + '</p>';
+            }
+            html += '</div></div>';
+          });
+          html += '</div></div>';
+        }
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = Components.pageHeader('events') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+      }
+    }
+  },
+  
+  // AI产品雷达页面
+  'products': {
+    async render(container) {
+      Pages.currentPage = Pages['products'];
+      container.innerHTML = Components.pageHeader('products') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载产品数据中...</span></div>';
+      try {
+        const result = await API.getProducts(20);
+        const products = result.products || [];
+        
+        let html = Components.pageHeader('products');
+        html += '<div class="metrics-row">';
+        html += '<div class="metric-card"><div class="metric-value">' + products.length + '</div><div class="metric-label">监测产品</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">' + products.filter(p => (p.trend_rate || 0) > 0).length + '</div><div class="metric-label">热度上涨</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">' + products.filter(p => (p.trend_rate || 0) < 0).length + '</div><div class="metric-label">热度下降</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">' + products.filter(p => p.country === 'CN').length + '</div><div class="metric-label">国内产品</div></div>';
+        html += '</div>';
+        
+        if (products.length === 0) {
+          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">暂无产品数据，等待每日自动分析</div></div></div></div>';
+        } else {
+          html += '<div class="card"><div class="card-header"><h3>AI产品热度排行榜</h3><div style="font-size:13px;color:#999;font-weight:normal">数据日期：' + (result.date||'--') + '</div></div><div class="card-body"><div class="table-container"><table class="data-table"><thead><tr><th>排名</th><th>产品</th><th>公司</th><th>地区</th><th>提及数</th><th>热度</th><th>趋势</th><th>主要情绪</th><th>变化原因</th></tr></thead><tbody>';
+          
+          products.forEach(p => {
+            const trend = p.trend_rate || 0;
+            const trendColor = trend > 0 ? '#27ae60' : trend < 0 ? '#e74c3c' : '#95a5a6';
+            const trendIcon = trend > 0 ? '↑' : trend < 0 ? '↓' : '→';
+            const sentimentColor = p.main_sentiment === 'positive' ? '#27ae60' : p.main_sentiment === 'negative' ? '#e74c3c' : '#95a5a6';
+            const sentimentText = p.main_sentiment === 'positive' ? '正面' : p.main_sentiment === 'negative' ? '负面' : '中性';
+            
+            html += '<tr>';
+            html += '<td><strong style="font-size:18px;color:#0D9488">' + (p.rank || '-') + '</strong></td>';
+            html += '<td><strong>' + (p.name || '-') + '</strong><br><small style="color:#999">' + (p.category || '') + '</small></td>';
+            html += '<td>' + (p.company || '-') + '</td>';
+            html += '<td>' + (p.country === 'CN' ? '🇨🇳 国内' : '🌍 国外') + '</td>';
+            html += '<td>' + (p.mention_count || 0) + '</td>';
+            html += '<td><strong style="color:#e74c3c">' + (p.heat_score || 0).toFixed(1) + '</strong></td>';
+            html += '<td><span style="color:' + trendColor + ';font-weight:bold">' + trendIcon + ' ' + Math.abs(trend).toFixed(1) + '%</span></td>';
+            html += '<td><span class="tag" style="background:' + sentimentColor + '">' + sentimentText + '</span></td>';
+            html += '<td style="max-width:200px;font-size:13px;color:#666">' + (p.trend_reason || '-') + '</td>';
+            html += '</tr>';
+          });
+          
+          html += '</tbody></table></div></div></div>';
+        }
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = Components.pageHeader('products') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+      }
+    }
+  },
+  
+  // AI技术趋势页面
+  'trends': {
+    async render(container) {
+      Pages.currentPage = Pages['trends'];
+      container.innerHTML = Components.pageHeader('trends') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载技术趋势中...</span></div>';
+      try {
+        const result = await API.getTrends(20);
+        const trends = result.trends || [];
+        
+        let html = Components.pageHeader('trends');
+        html += '<div class="metrics-row">';
+        html += '<div class="metric-card"><div class="metric-value">' + trends.length + '</div><div class="metric-label">监测技术</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">' + trends.filter(t => t.trend_level === 'rising').length + '</div><div class="metric-label">快速增长</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">' + trends.filter(t => t.trend_level === 'stable').length + '</div><div class="metric-label">稳定发展</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">' + trends.filter(t => t.trend_level === 'declining').length + '</div><div class="metric-label">热度下降</div></div>';
+        html += '</div>';
+        
+        if (trends.length === 0) {
+          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">暂无技术趋势数据，等待每日自动分析</div></div></div></div>';
+        } else {
+          html += '<div class="grid-2">';
+          trends.forEach(t => {
+            const growth = t.growth_rate || 0;
+            const levelColor = t.trend_level === 'rising' ? '#27ae60' : t.trend_level === 'declining' ? '#e74c3c' : '#f39c12';
+            const levelText = t.trend_level === 'rising' ? '🚀 快速增长' : t.trend_level === 'declining' ? '📉 热度下降' : '📊 稳定发展';
+            
+            html += '<div class="card">';
+            html += '<div class="card-header"><h3>' + (t.name || '-') + '</h3><span class="tag" style="background:' + levelColor + '">' + levelText + '</span></div>';
+            html += '<div class="card-body">';
+            html += '<div style="display:flex;gap:20px;margin-bottom:12px">';
+            html += '<div><div style="font-size:24px;font-weight:bold;color:' + (growth > 0 ? '#27ae60' : growth < 0 ? '#e74c3c' : '#95a5a6') + '">' + (growth > 0 ? '+' : '') + growth.toFixed(1) + '%</div><div style="font-size:12px;color:#999">增长率</div></div>';
+            html += '<div><div style="font-size:24px;font-weight:bold;color:#0D9488">' + (t.mention_count_7days || 0) + '</div><div style="font-size:12px;color:#999">近7天提及</div></div>';
+            html += '<div><div style="font-size:24px;font-weight:bold;color:#e74c3c">' + (t.heat_score || 0).toFixed(0) + '</div><div style="font-size:12px;color:#999">热度指数</div></div>';
+            html += '</div>';
+            html += '<p style="margin:8px 0;color:#666;font-size:14px">' + (t.summary || '') + '</p>';
+            if (t.business_opportunity) {
+              html += '<p style="margin:8px 0 0;padding:8px 12px;background:#e8f5f3;border-radius:6px;font-size:13px;color:#0D9488"><strong>企业机会:</strong> ' + t.business_opportunity + '</p>';
+            }
+            html += '</div></div>';
+          });
+          html += '</div>';
+        }
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = Components.pageHeader('trends') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+      }
+    }
+  },
+  
+  // AI日报中心页面
+  'reports': {
+    async render(container) {
+      Pages.currentPage = Pages['reports'];
+      container.innerHTML = Components.pageHeader('reports') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载日报中...</span></div>';
+      try {
+        const result = await API.getReports(10);
+        const reports = result.reports || result.data || [];
+        
+        let html = Components.pageHeader('reports');
+        html += '<div class="metrics-row">';
+        html += '<div class="metric-card"><div class="metric-value">' + reports.length + '</div><div class="metric-label">历史日报</div></div>';
+        html += '<div class="card" style="flex:2"><div class="card-body"><p style="color:#666">AI每日自动生成行业情报报告，包含热点事件、产品变化、技术趋势与企业应用建议</p></div></div>';
+        html += '</div>';
+        
+        if (reports.length === 0) {
+          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">暂无日报数据，等待每日自动生成</div></div></div></div>';
+        } else {
+          reports.forEach(r => {
+            html += '<div class="card" style="margin-bottom:16px">';
+            html += '<div class="card-header"><h3>📅 ' + (r.report_date || r.date || '未知日期') + ' 日报</h3>';
+            if (r.quality_score) {
+              html += '<span class="tag" style="background:#27ae60">质量分: ' + r.quality_score + '</span>';
+            }
+            html += '</div>';
+            html += '<div class="card-body">';
+            if (r.title) html += '<h4 style="margin-top:0">' + r.title + '</h4>';
+            if (r.content) {
+              // 简单的Markdown渲染
+              const content = r.content.replace(/\n/g, '<br>').replace(/^### (.*$)/gm, '<h4>$1</h4>').replace(/^## (.*$)/gm, '<h3>$1</h3>').replace(/^# (.*$)/gm, '<h2>$1</h2>');
+              html += '<div style="line-height:1.8;color:#333">' + content + '</div>';
+            } else if (r.summary) {
+              html += '<p style="color:#666">' + r.summary + '</p>';
+            }
+            html += '</div></div>';
+          });
+        }
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = Components.pageHeader('reports') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+      }
+    }
+  },
+  
+  // AI销售机会页面
+  'sales': {
+    async render(container) {
+      Pages.currentPage = Pages['sales'];
+      container.innerHTML = Components.pageHeader('sales') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载销售机会中...</span></div>';
+      try {
+        const result = await API.getSalesOpportunities();
+        const opportunities = result.opportunities || result.data || [];
+        
+        let html = Components.pageHeader('sales');
+        html += '<div class="metrics-row">';
+        html += '<div class="metric-card"><div class="metric-value">' + opportunities.length + '</div><div class="metric-label">今日机会</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">' + opportunities.filter(o => o.priority === 'high').length + '</div><div class="metric-label">高优先级</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">' + new Set(opportunities.map(o => o.industry)).size + '</div><div class="metric-label">涉及行业</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">' + new Set(opportunities.map(o => o.scenario)).size + '</div><div class="metric-label">应用场景</div></div>';
+        html += '</div>';
+        
+        if (opportunities.length === 0) {
+          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">暂无销售机会数据，等待AI自动分析</div></div></div></div>';
+        } else {
+          html += '<div class="card"><div class="card-header"><h3>AI识别的销售机会</h3></div><div class="card-body">';
+          opportunities.forEach(o => {
+            const priorityColor = o.priority === 'high' ? '#e74c3c' : o.priority === 'medium' ? '#f39c12' : '#95a5a6';
+            const priorityText = o.priority === 'high' ? '🔥 高优先级' : o.priority === 'medium' ? '⚡ 中优先级' : '📌 低优先级';
+            
+            html += '<div style="padding:16px 20px;border-bottom:1px solid #eee">';
+            html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+            html += '<strong style="font-size:16px">' + (o.industry || '-') + ' - ' + (o.scenario || '-') + '</strong>';
+            html += '<span class="tag" style="background:' + priorityColor + '">' + priorityText + '</span>';
+            html += '</div>';
+            if (o.sales_angle) html += '<p style="margin:4px 0;color:#666;font-size:14px"><strong>销售角度:</strong> ' + o.sales_angle + '</p>';
+            if (o.technology) html += '<p style="margin:4px 0;color:#666;font-size:14px"><strong>相关技术:</strong> ' + o.technology + '</p>';
+            if (o.customer_type) html += '<p style="margin:4px 0;color:#666;font-size:14px"><strong>目标客户:</strong> ' + o.customer_type + '</p>';
+            if (o.trigger_content) html += '<p style="margin:4px 0;padding:8px 12px;background:#f8f9fa;border-radius:6px;font-size:13px;color:#555"><strong>触发因素:</strong> ' + o.trigger_content + '</p>';
+            html += '</div>';
+          });
+          html += '</div></div>';
+        }
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = Components.pageHeader('sales') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+      }
+    }
+  },
+
+
+  'sales-dashboard': {
+    async render(container) {
+      container.innerHTML = Components.pageHeader('sales-dashboard') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载销售数据中...</span></div>';
+      try {
+        const [overviewRes, trendsRes, analysisRes] = await Promise.all([
+          fetch('/app-api/sales-dashboard/overview').then(r => r.json()),
+          fetch('/app-api/sales-dashboard/trends').then(r => r.json()),
+          fetch('/app-api/sales-dashboard/analysis').then(r => r.json())
+        ]);
+        const ov = overviewRes.data || {};
+        const an = analysisRes.data || {};
+        const amount = (ov.total_pipeline_amount || 0) / 10000;
+        const stageNames = {new:'新客户',contacted:'已接触',requirement:'需求确认',solution:'方案沟通',negotiation:'商务谈判',closed:'已成交',lost:'已流失'};
+        const stageColors = {new:'#94A3B8',contacted:'#60A5FA',requirement:'#FBBF24',solution:'#34D399',negotiation:'#F472B6',closed:'#10B981',lost:'#EF4444'};
+        
+        let html = '<div class="metric-cards">';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#E0F2FE;color:#0284C7;">👥</div><div class="metric-info"><div class="metric-value">' + (ov.total_customers||0) + '</div><div class="metric-label">客户总数</div></div><div class="metric-trend up">本月+' + (ov.new_customers||0) + '</div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#FEF3C7;color:#D97706;">💰</div><div class="metric-info"><div class="metric-value">' + amount.toFixed(1) + '万</div><div class="metric-label">商机金额</div></div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#FEE2E2;color:#DC2626;">⚠️</div><div class="metric-info"><div class="metric-value">' + (ov.risk_customers||0) + '</div><div class="metric-label">风险客户</div></div><div class="metric-trend down">需关注</div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#D1FAE5;color:#059669;">✅</div><div class="metric-info"><div class="metric-value">' + (ov.today_tasks||0) + '</div><div class="metric-label">今日任务</div></div><div class="metric-trend up">待处理</div></div>';
+        html += '</div>';
+        
+        html += '<div class="dashboard-grid">';
+        html += '<div class="dashboard-card"><h3>销售阶段分布</h3><div class="stage-list">';
+        (ov.stage_distribution || []).forEach(function(s) {
+          html += '<div class="stage-item"><span class="stage-name">' + (stageNames[s.sales_stage]||s.sales_stage) + '</span><div class="stage-bar"><div class="stage-fill" style="width:' + Math.min(s.count*20,100) + '%;background:' + (stageColors[s.sales_stage]||'#94A3B8') + ';"></div></div><span class="stage-count">' + s.count + '家</span></div>';
+        });
+        html += '</div></div>';
+        
+        html += '<div class="dashboard-card"><h3>行业分布</h3><div class="industry-list">';
+        (ov.industry_distribution || []).forEach(function(i) {
+          html += '<div class="industry-item"><span class="industry-name">' + (i.industry||'未分类') + '</span><span class="industry-count">' + i.count + '家</span></div>';
+        });
+        html += '</div></div></div>';
+        
+        html += '<div class="dashboard-grid">';
+        html += '<div class="dashboard-card"><h3>重点客户</h3><div class="customer-list">';
+        (an.high_value_customers || []).slice(0,5).forEach(function(c, idx) {
+          html += '<div class="customer-item" onclick="location.hash=\'#workspace-customer-detail?id=' + c.id + '\'"><div class="customer-rank">' + (idx+1) + '</div><div class="customer-info"><div class="customer-name">' + c.name + '</div><div class="customer-meta">' + (c.industry||'') + ' · ' + (stageNames[c.stage]||c.stage) + '</div></div><div class="customer-amount">' + ((c.amount||0)/10000) + '万</div></div>';
+        });
+        html += '</div></div>';
+        
+        html += '<div class="dashboard-card"><h3>风险客户</h3><div class="risk-list">';
+        (an.risk_customers || []).slice(0,5).forEach(function(r) {
+          html += '<div class="risk-item"><div class="risk-icon">⚠️</div><div class="risk-info"><div class="risk-name">' + r.name + '</div><div class="risk-reason">' + (r.risk_reason||'') + '</div></div></div>';
+        });
+        html += '</div></div></div>';
+        
+        html += '<div class="dashboard-card full-width"><h3>AI今日建议</h3><div class="suggestion-list">';
+        (an.today_suggestions || []).forEach(function(s, idx) {
+          html += '<div class="suggestion-item"><div class="suggestion-num">' + (idx+1) + '</div><div class="suggestion-text">' + s + '</div></div>';
+        });
+        html += '</div></div>';
+        
+        container.innerHTML = Components.pageHeader('sales-dashboard') + html;
+      } catch(e) {
+        console.error('加载销售驾驶舱失败:', e);
+        container.innerHTML = Components.pageHeader('sales-dashboard') + '<div class="error-state">数据加载失败，请稍后重试</div>';
+      }
+    }
+  },
+  'workspace-customers': {
+    async render(container) {
+      container.innerHTML = Components.pageHeader('workspace-customers') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载客户数据中...</span></div>';
+      try {
+        const result = await API.getCustomers();
+        const customers = result.customers || [];
+        const stageMap = { new:'新客户', contacted:'已接触', requirement:'需求确认', solution:'方案沟通', negotiation:'商务谈判', closed:'已成交', lost:'已流失' };
+        const levelColor = { A:'#e74c3c', B:'#f39c12', C:'#95a5a6' };
+        const stageColor = { new:'#95a5a6', contacted:'#3498db', requirement:'#9b59b6', solution:'#f39c12', negotiation:'#e67e22', closed:'#27ae60', lost:'#7f8c8d' };
+        
+        let html = '<div class="page-header"><h2>客户中心</h2><p>管理客户信息、跟进记录和AI机会评分</p></div>';
+        html += '<div class="metrics-row">';
+        html += '<div class="metric-card"><div class="metric-value">'+customers.length+'</div><div class="metric-label">总客户数</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">'+customers.filter(c=>c.customer_level==='A').length+'</div><div class="metric-label">A级客户</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">'+customers.filter(c=>c.sales_stage!=='new'&&c.sales_stage!=='lost').length+'</div><div class="metric-label">跟进中</div></div>';
+        const avgScore = customers.length ? Math.round(customers.reduce((s,c)=>s+(c.ai_score||0),0)/customers.length) : 0;
+        html += '<div class="metric-card"><div class="metric-value">'+avgScore+'</div><div class="metric-label">平均AI评分</div></div>';
+        html += '</div>';
+        html += '<div class="card"><div class="card-header"><h3>客户列表</h3></div><div class="card-body"><div class="table-container"><table class="data-table"><thead><tr><th>客户名称</th><th>行业</th><th>规模</th><th>等级</th><th>销售阶段</th><th>AI评分</th><th>最近跟进</th><th>操作</th></tr></thead><tbody>';
+        
+        customers.forEach(c => {
+          const sc = c.ai_score >= 70 ? '#27ae60' : c.ai_score >= 50 ? '#f39c12' : '#95a5a6';
+          html += '<tr><td><strong>'+c.company_name+'</strong><br><small>'+c.contact_name+' · '+c.contact_role+'</small></td>';
+          html += '<td>'+c.industry+'</td><td>'+c.company_size+'</td>';
+          html += '<td><span class="tag" style="background:'+levelColor[c.customer_level]+'">'+c.customer_level+'级</span></td>';
+          html += '<td><span class="tag" style="background:'+stageColor[c.sales_stage]+'">'+(stageMap[c.sales_stage]||c.sales_stage)+'</span></td>';
+          html += '<td><span style="color:'+sc+';font-weight:bold;font-size:18px">'+(c.ai_score||'-')+'</span></td>';
+          html += '<td>'+(c.last_follow_time ? new Date(c.last_follow_time).toLocaleDateString() : '未跟进')+'</td>';
+          html += '<td><button class="btn btn-sm" onclick="Router.navigate(\'workspace-customer-detail\',{id:'+c.id+'})">查看详情</button></td></tr>';
+        });
+        html += '</tbody></table></div></div></div>';
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: '+e.message+'</div></div>';
+      }
+    }
+  },
+  
+  'workspace-customer-detail': {
+    async render(container) {
+      const params = Router.currentParams || {};
+      container.innerHTML = Components.pageHeader('workspace-customer-detail') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载客户详情中...</span></div>';
+      try {
+        const result = await API.getCustomerDetail(params.id);
+        const c = result.customer;
+        const follows = result.follows || [];
+        const score = result.ai_score;
+        const opportunities = result.opportunities || [];
+        const stageMap = { new:'新客户', contacted:'已接触', requirement:'需求确认', solution:'方案沟通', negotiation:'商务谈判', closed:'已成交', lost:'已流失' };
+        
+        let html = '<div class="page-header"><button class="btn btn-outline" onclick="Router.navigate(\'workspace-customers\')">← 返回列表</button>';
+        html += '<h2 style="margin-top:16px">'+c.company_name+'</h2><p>'+c.industry+' · '+c.company_size+' · '+c.location+'</p></div>';
+        html += '<div class="dashboard-grid" style="grid-template-columns:1fr 1fr 1fr">';
+        html += '<div class="card"><div class="card-header"><h3>客户信息</h3></div><div class="card-body">';
+        html += '<p><strong>联系人：</strong>'+c.contact_name+' ('+c.contact_role+')</p>';
+        html += '<p><strong>电话：</strong>'+(c.phone||'-')+'</p>';
+        html += '<p><strong>邮箱：</strong>'+(c.email||'-')+'</p>';
+        html += '<p><strong>客户等级：</strong>'+c.customer_level+'级</p>';
+        html += '<p><strong>销售阶段：</strong>'+(stageMap[c.sales_stage]||c.sales_stage)+'</p>';
+        html += '<p><strong>最近跟进：</strong>'+(c.last_follow_time?new Date(c.last_follow_time).toLocaleString():'未跟进')+'</p>';
+        html += '<p><strong>下一步：</strong>'+(c.next_action||'-')+'</p>';
+        html += '<p><strong>备注：</strong>'+(c.notes||'-')+'</p></div></div>';
+        
+        const sc = score && score.score >= 70 ? '#27ae60' : score && score.score >= 50 ? '#f39c12' : '#95a5a6';
+        html += '<div class="card"><div class="card-header"><h3>AI机会评分</h3></div><div class="card-body">';
+        html += '<div style="text-align:center;padding:20px 0"><div style="font-size:48px;font-weight:bold;color:'+sc+'">'+(score?score.score:'-')+'</div><div style="color:#666">AI机会指数</div></div>';
+        if (score && score.reason) { try { const reasons = JSON.parse(score.reason); html += '<h4>评分依据</h4><ul>'+reasons.map(r=>'<li>'+r+'</li>').join('')+'</ul>'; } catch(e){} }
+        if (score && score.recommended_scenarios) { try { const scs = JSON.parse(score.recommended_scenarios); html += '<h4>推荐场景</h4><div>'+scs.map(s=>'<span class="tag" style="margin:2px;background:#0D9488">'+s+'</span>').join('')+'</div>'; } catch(e){} }
+        html += '<button class="btn btn-sm" style="margin-top:12px" onclick="recalcScore('+c.id+')">重新计算评分</button></div></div>';
+        
+        html += '<div class="card"><div class="card-header"><h3>匹配的销售机会</h3></div><div class="card-body">';
+        html += opportunities.length > 0 ? opportunities.map(o=>'<div style="padding:10px;border-bottom:1px solid #eee"><strong>'+o.scenario+'</strong><p style="margin:4px 0;font-size:13px;color:#666">'+(o.sales_angle||'')+'</p><span class="tag" style="background:'+(o.priority==='high'?'#e74c3c':o.priority==='medium'?'#f39c12':'#95a5a6')+'">'+o.priority+'</span></div>').join('') : '<p style="color:#999">暂无匹配机会</p>';
+        html += '</div></div></div>';
+        
+        html += '<div class="card" style="margin-top:20px"><div class="card-header"><h3>跟进记录 ('+follows.length+')</h3><button class="btn btn-sm" onclick="showFollowForm('+c.id+')">+ 新增跟进</button></div><div class="card-body">';
+        html += '<div id="followForm" style="display:none;padding:16px;background:#f8f9fa;border-radius:8px;margin-bottom:16px">';
+        html += '<select id="followType" class="form-input" style="margin-bottom:8px"><option value="电话">电话</option><option value="微信">微信</option><option value="会议">会议</option><option value="拜访">拜访</option><option value="邮件">邮件</option></select>';
+        html += '<textarea id="followContent" class="form-input" placeholder="沟通内容..." rows="3" style="margin-bottom:8px"></textarea>';
+        html += '<input id="followNext" class="form-input" placeholder="下一步动作..." style="margin-bottom:8px">';
+        html += '<button class="btn" onclick="submitFollow('+c.id+')">保存跟进</button></div>';
+        html += follows.length > 0 ? follows.map(f=>'<div style="padding:12px;border-left:3px solid #0D9488;margin-bottom:12px;padding-left:16px"><div style="display:flex;justify-content:space-between"><strong>'+f.follow_type+'</strong><span style="color:#999;font-size:13px">'+(f.follow_time?new Date(f.follow_time).toLocaleString():'')+'</span></div><p style="margin:8px 0">'+f.content+'</p>'+(f.next_action?'<p style="color:#0D9488;font-size:13px">→ 下一步：'+f.next_action+'</p>':'')+'</div>').join('') : '<p style="color:#999;padding:20px">暂无跟进记录</p>';
+        html += '</div></div>';
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: '+e.message+'</div></div>';
+      }
+    }
+  },
+  
+  'workspace-tasks': {
+    async render(container) {
+      container.innerHTML = Components.pageHeader('workspace-tasks') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载今日任务中...</span></div>';
+      try {
+        const result = await API.getTodayTasks();
+        const tasks = result.top5_tasks || [];
+        const opportunities = result.today_opportunities || [];
+        
+        let html = '<div class="page-header"><h2>今日销售任务</h2><p>'+(result.date || new Date().toLocaleDateString())+' · AI智能生成</p></div>';
+        html += '<div class="metrics-row">';
+        html += '<div class="metric-card"><div class="metric-value">'+(result.total_customers_needing_follow||0)+'</div><div class="metric-label">需跟进客户</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">'+(result.high_priority_customers||0)+'</div><div class="metric-label">A级客户</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">'+tasks.length+'</div><div class="metric-label">重点任务</div></div>';
+        html += '<div class="metric-card"><div class="metric-value">'+opportunities.length+'</div><div class="metric-label">今日机会</div></div></div>';
+        
+        html += '<div class="card" style="margin-bottom:20px"><div class="card-header"><h3>今日建议</h3></div><div class="card-body"><p style="line-height:1.8">'+(result.daily_advice||'')+'</p></div></div>';
+        
+        html += '<div class="card"><div class="card-header"><h3>重点客户 TOP '+tasks.length+'</h3></div><div class="card-body">';
+        tasks.forEach((t, i) => {
+          const sc = t.ai_score >= 70 ? '#27ae60' : t.ai_score >= 50 ? '#f39c12' : '#95a5a6';
+          html += '<div style="padding:16px 20px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:16px">';
+          html += '<div style="font-size:24px;font-weight:bold;color:#0D9488;min-width:40px">'+(i+1)+'</div>';
+          html += '<div style="flex:1"><div style="display:flex;align-items:center;gap:10px"><strong style="font-size:16px">'+t.company_name+'</strong>';
+          html += '<span class="tag" style="background:'+(t.customer_level==='A'?'#e74c3c':t.customer_level==='B'?'#f39c12':'#95a5a6')+'">'+t.customer_level+'级</span>';
+          html += '<span class="tag" style="background:#0D9488">'+t.industry+'</span>';
+          html += '<span style="color:'+sc+';font-weight:bold">AI评分: '+t.ai_score+'</span></div>';
+          html += '<p style="margin:8px 0;color:#333">'+t.suggested_action+'</p>';
+          html += '<div style="display:flex;gap:8px;flex-wrap:wrap">'+(t.recommended_scenarios||[]).map(s=>'<span class="tag" style="background:#e8f5f3;color:#0D9488">'+s+'</span>').join('')+'</div>';
+          html += '<p style="margin:8px 0 0;font-size:13px;color:#999">'+t.contact_name+' ('+t.contact_role+') · '+(t.last_follow_time ? '最近跟进: '+new Date(t.last_follow_time).toLocaleDateString() : '未跟进')+(t.days_since_follow ? ' · '+t.days_since_follow+'天前' : '')+'</p></div>';
+          html += '<button class="btn" onclick="Router.navigate(\'workspace-customer-detail\',{id:'+t.customer_id+'})">去跟进</button></div>';
+        });
+        html += '</div></div>';
+        
+        if (opportunities.length > 0) {
+          html += '<div class="card" style="margin-top:20px"><div class="card-header"><h3>今日AI销售机会</h3></div><div class="card-body">';
+          html += opportunities.map(o=>'<div style="padding:12px 20px;border-bottom:1px solid #eee"><strong>'+o.industry+' - '+o.scenario+'</strong><p style="margin:4px 0;color:#666;font-size:14px">'+(o.sales_angle||'')+'</p><span class="tag" style="background:'+(o.priority==='high'?'#e74c3c':o.priority==='medium'?'#f39c12':'#95a5a6')+'">'+(o.priority==='high'?'高优先级':o.priority==='medium'?'中优先级':'低优先级')+'</span></div>').join('');
+          html += '</div></div>';
+        }
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: '+e.message+'</div></div>';
+      }
+    }
+  },
+  'sales-prediction': {
+    async render(container) {
+      container.innerHTML = Components.pageHeader('sales-prediction') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载成交预测中...</span></div>';
+      try {
+        const res = await fetch('/app-api/sales-prediction/customers').then(r => r.json());
+        const data = res.data || [];
+        const high = data.filter(d => d.prediction_level === 'high').length;
+        const med = data.filter(d => d.prediction_level === 'medium').length;
+        const low = data.filter(d => d.prediction_level === 'low').length;
+        const avg = data.length > 0 ? Math.round(data.reduce((s, d) => s + (d.deal_probability || 0), 0) / data.length) : 0;
+        let html = Components.pageHeader('sales-prediction');
+        html += '<div class="metric-cards">';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#DCFCE7;color:#16A34A;">🎯</div><div class="metric-info"><div class="metric-value">' + high + '</div><div class="metric-label">高概率客户</div></div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#FEF9C3;color:#CA8A04;">⏳</div><div class="metric-info"><div class="metric-value">' + med + '</div><div class="metric-label">中概率客户</div></div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#FEE2E2;color:#DC2626;">⚠️</div><div class="metric-info"><div class="metric-value">' + low + '</div><div class="metric-label">低概率客户</div></div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#CCFBF1;color:#0D9488;">📊</div><div class="metric-info"><div class="metric-value">' + avg + '%</div><div class="metric-label">平均成交概率</div></div></div>';
+        html += '</div>';
+        if (data.length === 0) {
+          html += Components.emptyState('暂无成交预测数据');
+        } else {
+          html += '<div class="card"><div class="card-header"><h3>客户成交概率预测</h3></div><div class="card-body" style="padding:0;"><table class="data-table"><thead><tr><th>客户</th><th>成交概率</th><th>等级</th><th>正向因素</th><th>风险因素</th><th>建议动作</th></tr></thead><tbody>';
+          const sorted = data.slice().sort((a, b) => (b.deal_probability || 0) - (a.deal_probability || 0));
+          sorted.forEach(item => {
+            const level = item.prediction_level === 'high' ? '高概率' : item.prediction_level === 'medium' ? '中概率' : '低概率';
+            const color = item.prediction_level === 'high' ? '#16A34A' : item.prediction_level === 'medium' ? '#CA8A04' : '#DC2626';
+            const bg = item.prediction_level === 'high' ? '#DCFCE7' : item.prediction_level === 'medium' ? '#FEF9C3' : '#FEE2E2';
+            html += '<tr>';
+            html += '<td><strong>' + (item.customer_name || '-') + '</strong></td>';
+            html += '<td><div style="display:flex;align-items:center;gap:8px;"><div style="width:90px;height:8px;background:#E2E8F0;border-radius:4px;overflow:hidden;"><div style="width:' + (item.deal_probability || 0) + '%;height:100%;background:' + color + ';"></div></div><span style="font-weight:600;color:' + color + ';">' + (item.deal_probability || 0) + '%</span></div></td>';
+            html += '<td><span style="padding:2px 10px;border-radius:10px;font-size:12px;background:' + bg + ';color:' + color + ';">' + level + '</span></td>';
+            html += '<td style="font-size:12px;color:#16A34A;max-width:180px;">' + ((item.positive_factors || []).join('；') || '-') + '</td>';
+            html += '<td style="font-size:12px;color:#DC2626;max-width:180px;">' + ((item.risk_factors || []).join('；') || '-') + '</td>';
+            html += '<td style="font-size:13px;max-width:200px;">' + (item.recommended_action || '-') + '</td>';
+            html += '</tr>';
+          });
+          html += '</tbody></table></div></div>';
+        }
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = Components.pageHeader('sales-prediction') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+      }
+    }
+  },
+
+  'sales-funnel': {
+    async render(container) {
+      container.innerHTML = Components.pageHeader('sales-funnel') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载销售漏斗中...</span></div>';
+      try {
+        const res = await fetch('/app-api/sales-prediction/funnel').then(r => r.json());
+        const d = res.data || {};
+        const funnel = d.funnel || [];
+        const total = d.total_customers || 0;
+        const amount = (d.total_amount || 0) / 10000;
+        let html = Components.pageHeader('sales-funnel');
+        html += '<div class="metric-cards">';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#CCFBF1;color:#0D9488;">👥</div><div class="metric-info"><div class="metric-value">' + total + '</div><div class="metric-label">客户总数</div></div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#FEF3C7;color:#D97706;">💰</div><div class="metric-info"><div class="metric-value">' + amount.toFixed(1) + '万</div><div class="metric-label">商机总金额</div></div></div>';
+        const closed = funnel.find(f => f.stage === 'closed');
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#DCFCE7;color:#16A34A;">✅</div><div class="metric-info"><div class="metric-value">' + (closed ? closed.customer_count : 0) + '</div><div class="metric-label">已成交</div></div></div>';
+        const deal = funnel.find(f => f.stage === 'negotiation');
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#E0E7FF;color:#4F46E5;">🤝</div><div class="metric-info"><div class="metric-value">' + (deal ? deal.customer_count : 0) + '</div><div class="metric-label">商务谈判</div></div></div>';
+        html += '</div>';
+        html += '<div class="card"><div class="card-header"><h3>销售阶段漏斗</h3></div><div class="card-body">';
+        if (funnel.length === 0) {
+          html += Components.emptyState('暂无漏斗数据');
+        } else {
+          const colors = ['#94A3B8', '#60A5FA', '#FBBF24', '#0D9488', '#F472B6', '#10B981'];
+          funnel.forEach((item, idx) => {
+            const w = total > 0 ? Math.max(18, Math.round((item.customer_count / total) * 100)) : 18;
+            html += '<div style="margin-bottom:18px;">';
+            html += '<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-weight:600;color:#1E293B;">' + item.stage_name + '</span><span style="font-size:13px;color:#64748B;">' + item.customer_count + ' 家 · 转化率 ' + (item.conversion_rate || 0) + '%</span></div>';
+            html += '<div style="width:100%;height:34px;background:#F1F5F9;border-radius:6px;overflow:hidden;"><div style="width:' + w + '%;height:100%;background:' + colors[idx % colors.length] + ';border-radius:6px;display:flex;align-items:center;padding-left:12px;color:#fff;font-size:13px;font-weight:600;transition:width .3s;">' + (item.customer_count > 0 ? item.customer_count + '家' : '') + '</div></div>';
+            html += '</div>';
+          });
+        }
+        html += '</div></div>';
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = Components.pageHeader('sales-funnel') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+      }
+    }
+  },
+
+  'sales-review': {
+    async render(container) {
+      container.innerHTML = Components.pageHeader('sales-review') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载复盘报告中...</span></div>';
+      try {
+        const res = await fetch('/app-api/sales-prediction/reviews?review_type=daily&limit=10').then(r => r.json());
+        const reviews = res.data || [];
+        let html = Components.pageHeader('sales-review');
+        html += '<div style="margin-bottom:16px;display:flex;gap:10px;align-items:center;"><button class="btn btn-primary" id="genReviewBtn">生成今日复盘</button><span style="font-size:13px;color:#94A3B8;">基于最新客户数据与成交预测自动生成</span></div>';
+        if (reviews.length === 0) {
+          html += Components.emptyState('暂无复盘报告，点击上方按钮生成');
+        } else {
+          reviews.forEach(r => {
+            html += '<div class="card" style="margin-bottom:16px;"><div class="card-header" style="display:flex;justify-content:space-between;align-items:center;"><h3>AI销售复盘 · ' + r.review_date + '</h3><span style="font-size:12px;color:#94A3B8;">' + (r.created_time || '').replace('T', ' ').substring(0, 16) + '</span></div><div class="card-body">' + Components.renderMarkdown(r.content || '') + '</div></div>';
+          });
+        }
+        container.innerHTML = html;
+        const btn = document.getElementById('genReviewBtn');
+        if (btn) {
+          btn.addEventListener('click', async () => {
+            btn.disabled = true;
+            btn.textContent = '生成中...';
+            try {
+              await fetch('/app-api/sales-prediction/reviews/generate?review_type=daily', { method: 'POST' });
+              Pages['sales-review'].render(container);
+            } catch (err) {
+              alert('生成失败: ' + err.message);
+              btn.disabled = false;
+              btn.textContent = '生成今日复盘';
+            }
+          });
+        }
+      } catch (e) {
+        container.innerHTML = Components.pageHeader('sales-review') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+      }
+    }
+  },
 };
 
 // ========== 初始化 ==========
 document.addEventListener('DOMContentLoaded', () => {
   Router.init();
+  initNotificationReadState();
 });
+
+
+// ========== 销售工作台全局函数 ==========
+function showFollowForm(customerId) {
+    const form = document.getElementById('followForm');
+    if (form) {
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+async function submitFollow(customerId) {
+    const type = document.getElementById('followType').value;
+    const content = document.getElementById('followContent').value;
+    const next = document.getElementById('followNext').value;
+    
+    if (!content.trim()) {
+        alert('请输入沟通内容');
+        return;
+    }
+    
+    try {
+        await API.createFollow({
+            customer_id: customerId,
+            follow_type: type,
+            content: content,
+            next_action: next || null
+        });
+        alert('跟进记录已保存');
+        Router.currentParams = {id: customerId};
+        Router.navigate('workspace-customer-detail');
+    } catch (e) {
+        alert('保存失败: ' + e.message);
+    }
+}
+
+async function recalcScore(customerId) {
+    try {
+        await API.recalcCustomerScore(customerId);
+        alert('评分已重新计算');
+        Router.currentParams = {id: customerId};
+        Router.navigate('workspace-customer-detail');
+    } catch (e) {
+        alert('重新计算失败: ' + e.message);
+    }
+}
