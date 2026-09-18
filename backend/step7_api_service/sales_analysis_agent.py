@@ -45,7 +45,7 @@ class SalesAnalysisAgent:
 
     def _days_since(self, dt):
         if not dt:
-            return 999
+            return None
         if isinstance(dt, str):
             dt = datetime.strptime(dt, '%Y-%m-%d %H:%M:%S')
         return (datetime.now() - dt).days
@@ -100,14 +100,19 @@ class SalesAnalysisAgent:
         result = []
         for c in customers:
             stage_days = self._days_since(c.get('stage_changed_time'))
+            stage = c.get('sales_stage', '')
+            if stage_days is None:
+                risk_reason = f'销售阶段[{stage}]暂无阶段更新记录'
+            else:
+                risk_reason = f'销售阶段[{stage}]已{stage_days}天无变化'
             result.append({
                 'id': c['id'],
                 'name': c['company_name'],
                 'industry': c.get('industry', ''),
-                'stage': c.get('sales_stage', ''),
+                'stage': stage,
                 'amount': float(c.get('amount', 0) or 0),
                 'days_in_stage': stage_days,
-                'risk_reason': f'销售阶段[{c.get("sales_stage", "")}]已{stage_days}天无变化',
+                'risk_reason': risk_reason,
                 'suggestion': '建议主动联系客户，了解项目进展，推动阶段前进',
             })
         return result
@@ -128,19 +133,26 @@ class SalesAnalysisAgent:
         result = []
         for c in customers:
             days = self._days_since(c.get('last_follow_time'))
+            # 无跟进日期时按长期未跟进处理（仅用于阈值判定，不展示具体天数）
+            eff_days = days if days is not None else 9999
             is_a = c.get('customer_level') == 'A'
-            
-            if (is_a and days > 3) or (not is_a and days > 7):
-                priority = 'high' if (is_a and days > 3) else 'medium'
+
+            if (is_a and eff_days > 3) or (not is_a and eff_days > 7):
+                priority = 'high' if (is_a and eff_days > 3) else 'medium'
+                level = c.get('customer_level', '')
+                if days is None:
+                    suggestion = f'{level}级客户暂无跟进记录，建议立即联系'
+                else:
+                    suggestion = f'{level}级客户已{days}天未跟进，建议立即联系'
                 result.append({
                     'id': c['id'],
                     'name': c['company_name'],
                     'industry': c.get('industry', ''),
-                    'level': c.get('customer_level', ''),
+                    'level': level,
                     'stage': c.get('sales_stage', ''),
                     'days_since_follow': days,
                     'priority': priority,
-                    'suggestion': f'{c.get("customer_level", "")}级客户已{days}天未跟进，建议立即联系',
+                    'suggestion': suggestion,
                 })
         return result
 

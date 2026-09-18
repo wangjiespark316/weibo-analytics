@@ -18,6 +18,12 @@ from dotenv import load_dotenv
 sys.path.insert(0, '/opt/Weibo-Analyst/step7_api_service')
 from sales_analysis_agent import get_sales_analysis_agent
 
+try:
+    from daily_sales_agent import gen_tasks as _gen_sales_tasks
+except Exception as _ie:
+    _gen_sales_tasks = None
+    logging.getLogger(__name__).warning(f'daily_sales_agent 导入失败，今日任务数将返回0: {_ie}')
+
 load_dotenv('/opt/Weibo-Analyst/.env')
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -80,14 +86,19 @@ async def get_overview():
             GROUP BY industry ORDER BY count DESC LIMIT 10''')
         industry_distribution = cursor.fetchall()
         
-        # 今日任务数
-        cursor.execute('''SELECT COUNT(*) as task_count FROM sales_reminders
-            WHERE status = 'pending' AND DATE(created_time) = CURDATE()''')
-        today_tasks = cursor.fetchone()['task_count']
-        
         cursor.close()
         conn.close()
-        
+
+        # 今日任务数：来自 AI 每日销售任务（重点跟进客户 TOP5），而非空的提醒表
+        today_tasks = 0
+        try:
+            if _gen_sales_tasks is not None:
+                _tasks = _gen_sales_tasks()
+                if isinstance(_tasks, dict):
+                    today_tasks = len(_tasks.get('top5_tasks') or [])
+        except Exception as _te:
+            logger.warning(f'今日任务统计失败，返回0: {_te}')
+
         return {
             'status': 'success',
             'data': {

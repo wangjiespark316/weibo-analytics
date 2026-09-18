@@ -40,9 +40,14 @@ def calculate_score(customer_id):
     scenarios = industry_info.get("scenarios",[])[:3] if industry_info else []
     risks = industry_info.get("pain_points",[])[:2] if industry_info else []
     
-    # 规模15分
-    size_scores = {"1000人以上":15,"200-1000人":12,"50-200人":9,"10-50人":6,"10人以下":3}
-    ss = size_scores.get(c.get("company_size",""),6)
+    # 规模15分（兼容飞书人员规模口径 1-99/100-999/1000-9999/10000-99999/100000+ 与旧口径）
+    size_scores = {
+        # 飞书 CRM 口径
+        "100000+": 15, "10000-99999": 15, "1000-9999": 13, "100-999": 10, "1-99": 5,
+        # 旧口径
+        "1000人以上": 15, "200-1000人": 12, "50-200人": 9, "10-50人": 6, "10人以下": 3,
+    }
+    ss = size_scores.get((c.get("company_size") or "").strip(), 6)
     score += ss; reasons.append(f"公司规模({ss}分)")
     
     # 等级15分
