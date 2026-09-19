@@ -34,6 +34,7 @@ class HotWeiboItem(BaseModel):
 class HotWeiboResponse(BaseModel):
     total: int
     data: List[HotWeiboItem]
+    total_count: int = 0
 
 
 # ============================================================

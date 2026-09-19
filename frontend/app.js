@@ -757,7 +757,7 @@ const Pages = {
         API.getDailyReport()
       ]);
       
-      const weiboCount = hotWeibo ? (hotWeibo.data?.length || hotWeibo.length || 0) : 0;
+      const weiboCount = hotWeibo ? (hotWeibo.total_count ?? hotWeibo.total ?? (hotWeibo.data ? hotWeibo.data.length : 0)) : 0;
       const sentimentData = sentiment?.data || sentiment || {};
       const positive = sentimentData.positive_ratio || sentimentData.positive || 0;
       const negative = sentimentData.negative_ratio || sentimentData.negative || 0;

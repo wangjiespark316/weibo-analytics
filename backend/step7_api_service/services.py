@@ -363,6 +363,18 @@ def get_hot_weibo(limit: int = 20, min_engagement: int = 0,
         """
         params = [min_engagement] + ds_params + kw_params + date_params + time_params + fresh_params + [limit * 3]
         posts = db.fetch_all(sql, tuple(params))
+        # 同口径真实总数（不受 LIMIT 影响），供前端展示在库规模；条件与主查询完全一致
+        count_sql = f"""
+            SELECT COUNT(*) AS c
+            FROM weibo_posts
+            WHERE (like_count + comment_count + repost_count) >= %s
+            {ds_sql}{kw_sql}{date_sql}{time_sql}{fresh_sql}
+        """
+        count_params = [min_engagement] + ds_params + kw_params + date_params + time_params + fresh_params
+        try:
+            total_count = int((db.fetch_one(count_sql, tuple(count_params)) or {}).get("c", len(posts)))
+        except Exception:
+            total_count = len(posts)
         scored = engine.calc_hotspot(posts, top_n=limit)
         for item in scored:
             pt = item.get("publish_time")
@@ -382,7 +394,7 @@ def get_hot_weibo(limit: int = 20, min_engagement: int = 0,
                 _it.setdefault('category', 'news')
                 _it.setdefault('sentiment', None)
                 _it.setdefault('ai_status', 'pending')
-        return {"total": len(scored), "data": scored}
+        return {"total": len(scored), "total_count": total_count, "data": scored}
 
     return _safe_call(_do, cache_key=cache_key,
                       fallback={"total": 0, "data": []})
