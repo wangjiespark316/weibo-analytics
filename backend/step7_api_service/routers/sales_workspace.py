@@ -13,13 +13,13 @@ load_dotenv("/opt/Weibo-Analyst/.env")
 router = APIRouter(prefix="/api/workspace", tags=["销售工作台"])
 
 def get_db():
-    db_url = os.getenv("DATABASE_URL")
-    p = urlparse(db_url)
-    return pymysql.connect(host=p.hostname, port=p.port or 3306,
-        user=p.username if isinstance(p.username, str) else p.username.decode(),
-        password=p.password if isinstance(p.password, str) else p.password.decode(),
-        database=p.path.lstrip("/"), ssl={"ssl_disabled": False},
-        cursorclass=pymysql.cursors.DictCursor)
+    # 统一复用 database.py 的进程级 TiDB 连接池，避免每请求新建公网 SSL 连接
+    try:
+        from ..database import get_connection as _gc
+    except Exception:
+        from database import get_connection as _gc
+    return _gc()
+
 
 class FollowCreate(BaseModel):
     customer_id: int
@@ -31,19 +31,21 @@ class FollowCreate(BaseModel):
 @router.get("/customers")
 def list_customers(industry: Optional[str] = None, stage: Optional[str] = None, level: Optional[str] = None):
     conn = get_db(); cur = conn.cursor()
-    sql = "SELECT c.* FROM customers c WHERE 1=1"
+    where = " WHERE 1=1"
     params = []
-    if industry: sql += " AND c.industry=%s"; params.append(industry)
-    if stage: sql += " AND c.sales_stage=%s"; params.append(stage)
-    if level: sql += " AND c.customer_level=%s"; params.append(level)
-    sql += " ORDER BY c.customer_level, c.id"
+    if industry: where += " AND c.industry=%s"; params.append(industry)
+    if stage: where += " AND c.sales_stage=%s"; params.append(stage)
+    if level: where += " AND c.customer_level=%s"; params.append(level)
+    # 一条 SQL 带出每个客户的最新 AI 评分（窗口函数取 rn=1），消除 N+1 次公网往返
+    sql = (
+        "SELECT c.*, s.score AS ai_score FROM customers c "
+        "LEFT JOIN (SELECT customer_id, score, ROW_NUMBER() OVER "
+        "(PARTITION BY customer_id ORDER BY created_time DESC) AS rn "
+        "FROM customer_ai_scores) s ON s.customer_id=c.id AND s.rn=1"
+        + where + " ORDER BY c.customer_level, c.id"
+    )
     cur.execute(sql, params)
     customers = cur.fetchall()
-    # 获取每个客户的最新评分
-    for c in customers:
-        cur.execute("SELECT score FROM customer_ai_scores WHERE customer_id=%s ORDER BY created_time DESC LIMIT 1", (c["id"],))
-        score_row = cur.fetchone()
-        c["ai_score"] = score_row["score"] if score_row else None
     conn.close()
     return {"count": len(customers), "customers": customers}
 

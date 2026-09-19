@@ -193,10 +193,15 @@ def _safe_call(func, *args, cache_key=None, fallback=None, **kwargs):
 # dataset_type 过滤
 # ============================================================
 
+# 归档数据集（dataset_type 以 archived 开头）为历史隔离区，不参与任何默认/全库
+# 查询；仅在显式指定该数据集时才可追溯（如早期账号通道抓取的娱乐内容）。
+_ACTIVE_DS_SQL = " AND (dataset_type IS NULL OR dataset_type NOT LIKE 'archived%%')"
+
+
 def _ds_filter(dataset_type: Optional[str]) -> tuple:
     if dataset_type:
         return (" AND dataset_type = %s", [dataset_type])
-    return ("", [])
+    return (_ACTIVE_DS_SQL, [])
 
 
 # ============================================================
@@ -418,10 +423,12 @@ def get_keyword_trend(keyword: str, days: int = 30,
             comment_params = (like_pattern, cutoff, dataset_type)
         else:
             comment_sql = """
-                SELECT DATE(created_time) AS date, COUNT(*) AS cnt
-                FROM weibo_comments
-                WHERE content LIKE %s AND created_time >= %s
-                GROUP BY DATE(created_time) ORDER BY date
+                SELECT DATE(c.created_time) AS date, COUNT(*) AS cnt
+                FROM weibo_comments c
+                INNER JOIN weibo_posts p ON c.weibo_id = p.weibo_id
+                WHERE c.content LIKE %s AND c.created_time >= %s
+                  AND (p.dataset_type IS NULL OR p.dataset_type NOT LIKE 'archived%%')
+                GROUP BY DATE(c.created_time) ORDER BY date
             """
             comment_params = (like_pattern, cutoff)
         comment_rows = db.fetch_all(comment_sql, comment_params)
@@ -510,7 +517,9 @@ def get_sentiment(sample_size: int = 500, keyword: str = None,
         else:
             base_from = """
                 FROM weibo_comments c
+                INNER JOIN weibo_posts p ON c.weibo_id = p.weibo_id
                 WHERE c.content IS NOT NULL AND c.content != ''
+                  AND (p.dataset_type IS NULL OR p.dataset_type NOT LIKE 'archived%%')
             """
             base_params = []
 

@@ -17,7 +17,9 @@ def hot_weibo(
     days: Optional[int] = Query(None, ge=1, le=30, description="只返回最近N天发布的数据"),
     fresh_hours: Optional[int] = Query(None, ge=1, le=72,
                                        description="只返回最近N小时新入库的数据（按首次入库时间，用于每日去重）"),
-    dataset_type: Optional[str] = Query(None, pattern="^(ai_industry|brand_monitor|general_hotspot)$",
+    date: Optional[str] = Query(None, pattern=r"^(?:\d{4}-\d{2}-\d{2}|yesterday|today)$",
+                                description="只返回指定自然日（北京时间）发布的数据，如 2026-09-18，或 yesterday/today；优先于 days/fresh_hours"),
+    dataset_type: Optional[str] = Query(None, pattern="^(ai_industry|brand_monitor|general_hotspot|archived_[a-z_]+)$",
                                          description="数据集过滤（未鉴权时生效；鉴权后由租户强制指定）"),
     tenant: Optional[dict] = Depends(verify_api_key),
 ):
@@ -28,4 +30,5 @@ def hot_weibo(
         keyword=keyword,
         days=days,
         fresh_hours=fresh_hours,
+        date=date,
     )

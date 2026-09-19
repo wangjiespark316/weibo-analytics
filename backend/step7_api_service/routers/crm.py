@@ -46,14 +46,13 @@ _ALL_COLS = '''
 
 
 def get_db():
-    db_url = os.getenv('DATABASE_URL')
-    parsed = urlparse(db_url)
-    return pymysql.connect(
-        host=parsed.hostname, port=parsed.port or 4000,
-        user=parsed.username, password=parsed.password,
-        database=parsed.path.lstrip('/'), ssl={'ssl_disabled': False},
-        cursorclass=pymysql.cursors.DictCursor
-    )
+    # 统一复用 database.py 的进程级 TiDB 连接池，避免每请求新建公网 SSL 连接
+    try:
+        from ..database import get_connection as _gc
+    except Exception:
+        from database import get_connection as _gc
+    return _gc()
+
 
 
 def _v(value):
