@@ -25,9 +25,13 @@ const API = {
     }
   },
   
-  // 热门微博
-  async getHotWeibo(limit = 20) {
-    return this.request(`/hot-weibo?limit=${limit}`);
+  // 热门微博（默认限定 AI 行业采集库；历史通用热点 general_hotspot 为独立数据集，
+  // 仅在显式指定 datasetType 时返回，避免娱乐等无关历史内容混入主界面）
+  async getHotWeibo(limit = 20, datasetType = 'ai_industry', date = null) {
+    let qs = `?limit=${limit}`;
+    if (datasetType) qs += `&dataset_type=${encodeURIComponent(datasetType)}`;
+    if (date) qs += `&date=${encodeURIComponent(date)}`;
+    return this.request(`/hot-weibo${qs}`);
   },
   
   // 情感分析
@@ -748,7 +752,7 @@ const Pages = {
       
       // 并行获取数据
       const [hotWeibo, sentiment, report] = await Promise.all([
-        API.getHotWeibo(10),
+        API.getHotWeibo(10, 'ai_industry'),
         API.getSentiment(1000),
         API.getDailyReport()
       ]);
@@ -1056,7 +1060,7 @@ const Pages = {
       `;
       
       // 获取数据
-      const data = await API.getHotWeibo(50);
+      const data = await API.getHotWeibo(50, 'ai_industry');
       const rawData = data?.data || data || [];
       
       // 直接使用后端真实 AI 字段（category / sentiment / ai_status），前端不猜测、不伪造
@@ -1419,7 +1423,7 @@ const Pages = {
       `;
       
       // 获取真实微博数据
-      const data = await API.getHotWeibo(50);
+      const data = await API.getHotWeibo(50, 'ai_industry');
       const weibos = data?.data || data || [];
       
       // 从微博内容中提取话题标签 #xxx#
