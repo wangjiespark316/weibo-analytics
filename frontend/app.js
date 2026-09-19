@@ -294,6 +294,8 @@ const Router = {
   },
   
   navigate(route, params = null, updateHash = true) {
+    // 路由切换时关闭全局详情抽屉，避免抽屉残留在新页面
+    if (typeof closeDrawer === 'function') { try { closeDrawer(); } catch (e) {} }
     if (params) this.currentParams = params;
     this.currentRoute = route;
     if (updateHash) {
@@ -1008,10 +1010,13 @@ const Pages = {
             <label class="filter-label">分类</label>
             <select id="filterCategory">
               <option value="">全部</option>
-              <option value="tech">科技</option>
-              <option value="finance">财经</option>
-              <option value="social">社会</option>
-              <option value="entertainment">娱乐</option>
+              <option value="agent">智能体</option>
+              <option value="llm">大模型</option>
+              <option value="office">AI办公</option>
+              <option value="coding">AI编程</option>
+              <option value="hardware">AI硬件</option>
+              <option value="enterprise">企业应用</option>
+              <option value="news">行业资讯</option>
             </select>
           </div>
           <div class="filter-item">
@@ -1021,6 +1026,7 @@ const Pages = {
               <option value="positive">正面</option>
               <option value="neutral">中性</option>
               <option value="negative">负面</option>
+              <option value="none">待分析</option>
             </select>
           </div>
           <div class="filter-item">
@@ -1053,34 +1059,14 @@ const Pages = {
       const data = await API.getHotWeibo(50);
       const rawData = data?.data || data || [];
       
-      // 为每条数据生成稳定的分类、情感、状态字段（基于内容哈希，非随机）
-      this.data = rawData.map((item, idx) => {
-        const text = (item.text || item.content || '').toLowerCase();
-        const hash = text.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-        
-        // 基于内容关键词判断分类
-        let category = 'social';
-        if (text.includes('ai') || text.includes('人工智能') || text.includes('科技') || text.includes('芯片') || text.includes('互联网')) category = 'tech';
-        else if (text.includes('股') || text.includes('财经') || text.includes('经济') || text.includes('金融') || text.includes('投资')) category = 'finance';
-        else if (text.includes('娱乐') || text.includes('明星') || text.includes('电影') || text.includes('综艺')) category = 'entertainment';
-        
-        // 基于内容关键词判断情感
-        let sentiment = 'neutral';
-        if (text.includes('好') || text.includes('棒') || text.includes('赞') || text.includes('喜欢') || text.includes('支持') || text.includes('优秀')) sentiment = 'positive';
-        else if (text.includes('差') || text.includes('烂') || text.includes('讨厌') || text.includes('反对') || text.includes('批评') || text.includes('问题')) sentiment = 'negative';
-        
-        // 基于哈希生成状态（稳定）
-        const statuses = ['done', 'done', 'done', 'pending', 'processing'];
-        const status = statuses[hash % statuses.length];
-        
-        return {
-          ...item,
-          _category: category,
-          _sentiment: sentiment,
-          _status: status,
-          _index: idx
-        };
-      });
+      // 直接使用后端真实 AI 字段（category / sentiment / ai_status），前端不猜测、不伪造
+      this.data = rawData.map((item, idx) => ({
+        ...item,
+        _category: item.category || 'news',
+        _sentiment: item.sentiment || 'none',
+        _status: item.ai_status || 'pending',
+        _index: idx
+      }));
       
       this.filtered = [...this.data];
       this.renderTable();
@@ -1143,17 +1129,24 @@ const Pages = {
       }
       
       const categoryMap = {
-        tech: '科技', finance: '财经', social: '社会', entertainment: '娱乐', life: '生活'
+        agent: { label: '智能体', type: 'blue' },
+        llm: { label: '大模型', type: 'blue' },
+        coding: { label: 'AI编程', type: 'blue' },
+        office: { label: 'AI办公', type: 'green' },
+        hardware: { label: 'AI硬件', type: 'orange' },
+        enterprise: { label: '企业应用', type: 'orange' },
+        news: { label: '行业资讯', type: 'gray' }
       };
       const sentimentMap = {
         positive: { label: '正面', type: 'green' },
         neutral: { label: '中性', type: 'gray' },
-        negative: { label: '负面', type: 'red' }
+        negative: { label: '负面', type: 'red' },
+        none: { label: '待分析', type: 'gray' }
       };
       const statusMap = {
-        done: { label: '已分析', type: 'blue' },
-        pending: { label: '待分析', type: 'orange' },
-        processing: { label: '分析中', type: 'green' }
+        done: { label: '已分析', type: 'green' },
+        pending: { label: '待分析', type: 'gray' },
+        processing: { label: '分析中', type: 'orange' }
       };
       
       tableEl.innerHTML = `
@@ -1173,13 +1166,13 @@ const Pages = {
           </thead>
           <tbody>
             ${pageData.map((item, idx) => {
-              const cat = categoryMap[item._category] || '社会';
-              const sent = sentimentMap[item._sentiment] || sentimentMap.neutral;
-              const stat = statusMap[item._status] || statusMap.done;
+              const cat = categoryMap[item._category] || categoryMap.news;
+              const sent = sentimentMap[item._sentiment] || sentimentMap.none;
+              const stat = statusMap[item._status] || statusMap.pending;
               const content = (item.text || item.content || '').substring(0, 60);
-              const author = item.username || item.user || item.author || item.screen_name || `用户${item._index + 1}`;
-              const time = item.created_at || item.time || `2026-09-13 ${String(8 + (item._index % 12)).padStart(2, '0')}:30:00`;
-              const hot = item.hot || item.heat || (1000 + (item._index * 137) % 4000);
+              const author = item.username || item.user || item.author || item.screen_name || '未知用户';
+              const time = Pages['weibo-data'].fmtPostTime(item);
+              const hot = (item.hotspot_score != null && item.hotspot_score !== '') ? Number(item.hotspot_score).toFixed(1) : '—';
               
               return `
                 <tr style="cursor:pointer;" onclick="Pages['weibo-data'].viewDetail(${start + idx})">
@@ -1188,7 +1181,7 @@ const Pages = {
                   <td style="font-weight:500;">${author}</td>
                   <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${item.text || item.content || ''}">${content}...</td>
                   <td><span style="color:var(--warning);font-weight:500;">${hot}</span></td>
-                  <td>${Components.tag(cat, 'blue')}</td>
+                  <td>${Components.tag(cat.label, cat.type)}</td>
                   <td>${Components.tag(sent.label, sent.type)}</td>
                   <td>${Components.tag(stat.label, stat.type)}</td>
                   <td>
@@ -1205,13 +1198,52 @@ const Pages = {
       `;
     },
     
+    fmtPostTime(item) {
+      let d = null;
+      if (item.publish_timestamp) d = new Date(Number(item.publish_timestamp));
+      else if (item.publish_time) d = new Date(String(item.publish_time).replace(' ', 'T'));
+      else if (item.created_at) d = new Date(item.created_at);
+      if (!d || isNaN(d.getTime())) return '—';
+      const p = n => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    },
+
+    fmtCount(v, capped) {
+      if (capped) return '100万+';
+      if (v == null || v === '' || isNaN(Number(v))) return '—';
+      return Number(v).toLocaleString('zh-CN');
+    },
+
     viewDetail(index) {
       const item = this.filtered[index];
       if (!item) return;
-      
+
       const content = item.text || item.content || '';
       const author = item.username || item.user || item.author || item.screen_name || '未知用户';
-      
+      const cMap = {
+        agent: ['智能体', 'blue'], llm: ['大模型', 'blue'], coding: ['AI编程', 'blue'],
+        office: ['AI办公', 'green'], hardware: ['AI硬件', 'orange'],
+        enterprise: ['企业应用', 'orange'], news: ['行业资讯', 'gray']
+      };
+      const sMap = {
+        positive: ['正面', 'green'], neutral: ['中性', 'gray'],
+        negative: ['负面', 'red'], none: ['待分析', 'gray']
+      };
+      const stMap = {
+        done: ['已分析', 'green'], pending: ['待分析', 'gray'], processing: ['分析中', 'orange']
+      };
+      const cat = cMap[item._category] || cMap.news;
+      const sent = sMap[item._sentiment] || sMap.none;
+      const stat = stMap[item._status] || stMap.pending;
+      const hotText = (item.hotspot_score != null && item.hotspot_score !== '') ? Number(item.hotspot_score).toFixed(1) : '—';
+      const linkRow = item.url ? `
+        <div class="detail-section">
+          <div class="detail-row">
+            <span class="detail-label">原文链接</span>
+            <span class="detail-value"><a href="${item.url}" target="_blank" rel="noopener" style="color:var(--primary);">查看原微博</a></span>
+          </div>
+        </div>` : '';
+
       openDrawer('微博详情', `
         <div class="detail-section">
           <div class="detail-row">
@@ -1220,11 +1252,11 @@ const Pages = {
           </div>
           <div class="detail-row">
             <span class="detail-label">发布时间</span>
-            <span class="detail-value">${item.created_at || item.time || '2026-09-13 08:30:00'}</span>
+            <span class="detail-value">${this.fmtPostTime(item)}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">热度</span>
-            <span class="detail-value" style="color:var(--warning);font-weight:500;">${item.hot || item.heat || 1280}</span>
+            <span class="detail-label">热度评分</span>
+            <span class="detail-value" style="color:var(--warning);font-weight:500;">${hotText}</span>
           </div>
         </div>
         <div class="detail-section">
@@ -1232,24 +1264,29 @@ const Pages = {
           <div class="detail-content">${content}</div>
         </div>
         <div class="detail-section">
-          <div class="detail-section-title">AI 分析结果</div>
+          <div class="detail-section-title">互动数据</div>
           <div class="detail-row">
-            <span class="detail-label">情感判断</span>
-            <span class="detail-value">${Components.tag('正面', 'green')} 置信度 92.5%</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">关键词</span>
-            <span class="detail-value">AI、大模型、飞书、智能体</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">热点原因</span>
-            <span class="detail-value">AI 产品发布引发行业讨论，KOL 转发带动传播</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">AI建议</span>
-            <span class="detail-value">建议持续关注该话题，可作为产品优化参考</span>
+            <span class="detail-label">点赞 / 评论 / 转发</span>
+            <span class="detail-value">${this.fmtCount(item.like_count, false)} / ${this.fmtCount(item.comment_count, item.comment_capped)} / ${this.fmtCount(item.repost_count, item.repost_capped)}</span>
           </div>
         </div>
+        <div class="detail-section">
+          <div class="detail-section-title">AI 分析结果</div>
+          <div class="detail-row">
+            <span class="detail-label">内容分类</span>
+            <span class="detail-value">${Components.tag(cat[0], cat[1])}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">情感倾向</span>
+            <span class="detail-value">${Components.tag(sent[0], sent[1])}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">分析状态</span>
+            <span class="detail-value">${Components.tag(stat[0], stat[1])}</span>
+          </div>
+          <div style="margin-top:8px;font-size:12px;color:var(--text-secondary);line-height:1.6;">分类与情感由后端 AI 分析生成；微博对超百万的评论/转发仅返回“100万+”，不展示伪造的精确值。</div>
+        </div>
+        ${linkRow}
       `);
     }
   },
@@ -1325,7 +1362,7 @@ const Pages = {
                 </thead>
                 <tbody>
                   ${users.length ? users.map((user, idx) => {
-                    const name = user.username || user.name || user.screen_name || `用户${idx + 1}`;
+                    const name = user.username || user.name || user.screen_name || '未知用户';
                     const fans = user.followers_count || 0;
                     const engage = user.total_engagement || 0;
                     const weiboCount = user.weibo_count || 0;

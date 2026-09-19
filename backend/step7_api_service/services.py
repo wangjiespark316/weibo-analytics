@@ -17,8 +17,11 @@ import json
 import signal
 import threading
 from typing import Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from contextlib import contextmanager
+
+# 北京时区（自然日口径统一用北京时间）
+_BJ_TZ = timezone(timedelta(hours=8))
 from concurrent.futures import ThreadPoolExecutor
 
 from . import database as db
@@ -200,12 +203,103 @@ def _ds_filter(dataset_type: Optional[str]) -> tuple:
 # 1. 热点微博（轻量，已有缓存）
 # ============================================================
 
+# AI 垂类确定性分类（基于真实话题/正文关键词，非随机哈希）
+_AI_CATEGORY_RULES = [
+    ('coding', ['编程', '代码', '程序员', '开发者', '开发工具', 'copilot', 'cursor', 'codex', 'github', 'ai编程', '开发助手']),
+    ('agent', ['agent', '智能体', 'agents', '多智能体']),
+    ('hardware', ['手机', '芯片', '硬件', '机器人', '眼镜', '穿戴', '汽车', '车型', '算力', '英伟达', '昇腾', '骁龙', '终端', '设备', 'ai手机']),
+    ('office', ['办公', '飞书', '豆包', 'workbuddy', '文档', '会议', '协同', '助手', '表格', 'im']),
+    ('llm', ['大模型', '大语言模型', '模型', 'deepseek', '千问', 'gpt', 'chatgpt', 'claude', 'gemini', 'llm', '多模态', '推理模型', '开源模型']),
+    ('enterprise', ['企业', '落地', '数字化', '转型', '私有化', '部署', '客服', '销售', '客户', '解决方案']),
+    ('product', ['app', '应用', '产品', '上线', '发布', '推出', '功能', '新版本']),
+]
+
+
+def _classify_ai_category(topic, content):
+    text = ((topic or '') + ' ' + (content or '')).lower()
+    for key, kws in _AI_CATEGORY_RULES:
+        for kw in kws:
+            if kw in text:
+                return key
+    return 'news'
+
+
+def _enrich_post_ai_fields(posts, comments_per_post=6):
+    """为热点帖子补真实 AI 字段（不改表结构，结果随热点接口缓存）：
+    - category: 基于真实话题/正文的确定性 AI 类目
+    - sentiment: 基于该帖高赞评论的 SnowNLP 情感多数标签（positive/neutral/negative；无有效评论为 None）
+    - ai_status: 评论是否已完成采集（done/pending，来自 comment_crawl_status）
+    """
+    if not posts:
+        return posts
+    ids = [p.get('weibo_id') for p in posts if p.get('weibo_id')]
+    if not ids:
+        return posts
+    ph = ','.join(['%s'] * len(ids))
+    try:
+        meta_rows = db.fetch_all(
+            f"SELECT weibo_id, topic, comment_crawl_status FROM weibo_posts WHERE weibo_id IN ({ph})",
+            tuple(ids)) or []
+        comment_rows = db.fetch_all(
+            f"""SELECT weibo_id, content FROM (
+                  SELECT weibo_id, content,
+                         ROW_NUMBER() OVER (PARTITION BY weibo_id ORDER BY like_count DESC) AS rn
+                  FROM weibo_comments WHERE weibo_id IN ({ph})
+                ) t WHERE rn <= %s""",
+            tuple(ids) + (comments_per_post,)) or []
+    except Exception:
+        for p in posts:
+            p.setdefault('category', 'news'); p.setdefault('sentiment', None); p.setdefault('ai_status', 'pending')
+        return posts
+    meta = {r['weibo_id']: r for r in meta_rows}
+    grouped = {}
+    for r in comment_rows:
+        t = (r.get('content') or '').strip()
+        if t:
+            grouped.setdefault(r['weibo_id'], []).append(t)
+    try:
+        from snownlp import SnowNLP
+    except Exception:
+        SnowNLP = None
+    for p in posts:
+        wid = p.get('weibo_id')
+        m = meta.get(wid, {})
+        p['category'] = _classify_ai_category(m.get('topic'), p.get('content'))
+        label = None
+        comments = grouped.get(wid, [])
+        if SnowNLP and comments:
+            pos = neu = neg = 0
+            for text in comments:
+                try:
+                    sc = SnowNLP(text).sentiments
+                except Exception:
+                    continue
+                if sc > 0.6:
+                    pos += 1
+                elif sc >= 0.4:
+                    neu += 1
+                else:
+                    neg += 1
+            if pos + neu + neg:
+                label = max((('positive', pos), ('neutral', neu), ('negative', neg)),
+                            key=lambda x: x[1])[0]
+        p['sentiment'] = label
+        p['ai_status'] = 'done' if m.get('comment_crawl_status') == 1 else 'pending'
+    return posts
+
+
 def get_hot_weibo(limit: int = 20, min_engagement: int = 0,
                    dataset_type: Optional[str] = None,
                    keyword: Optional[str] = None,
                    days: Optional[int] = None,
-                   fresh_hours: Optional[int] = None):
-    cache_key = f'hot_weibo:{limit}:{min_engagement}:{dataset_type or "all"}:{keyword or ""}:{days or 0}:{fresh_hours or 0}'
+                   fresh_hours: Optional[int] = None,
+                   date: Optional[str] = None):
+    # 归一化静态关键字：飞书多维表格等无法动态拼日期的调用方直接传 yesterday/today（北京自然日）
+    if date in ("yesterday", "today"):
+        _today_bj = datetime.now(_BJ_TZ).date()
+        _d = _today_bj if date == "today" else _today_bj - timedelta(days=1)
+        date = _d.strftime("%Y-%m-%d")
+    cache_key = f'hot_weibo:{limit}:{min_engagement}:{dataset_type or "all"}:{keyword or ""}:{days or 0}:{fresh_hours or 0}:{date or ""}'
 
     def _do():
         ds_sql, ds_params = _ds_filter(dataset_type)
@@ -220,17 +314,32 @@ def get_hot_weibo(limit: int = 20, min_engagement: int = 0,
                 kw_sql = f" AND ({kw_clauses})"
                 kw_params = [f"%{k}%" for k in keywords]
 
+        # 自然日过滤（精确北京日期 [YYYY-MM-DD 00:00:00, 次日00:00:00)，日报取数用）
+        # date 与 days/fresh_hours 互斥、date 优先；库里 publish_time 存的是北京时刻
+        date_sql = ""
+        date_params = []
+        if date:
+            try:
+                d0 = datetime.strptime(date, "%Y-%m-%d")
+                d1 = d0 + timedelta(days=1)
+                date_sql = " AND publish_time >= %s AND publish_time < %s"
+                date_params = [d0.strftime("%Y-%m-%d %H:%M:%S"),
+                               d1.strftime("%Y-%m-%d %H:%M:%S")]
+            except (ValueError, TypeError):
+                date_sql = ""
+                date_params = []
+
         # 时间过滤（最近N天）
         time_sql = ""
         time_params = []
-        if days and days > 0:
+        if not date_sql and days and days > 0:
             time_sql = " AND publish_time >= DATE_SUB(NOW(), INTERVAL %s DAY)"
             time_params = [days]
 
         # 入库时间过滤（最近N小时首次入库，按入库时刻切分每日数据，相邻天天然互斥去重）
         fresh_sql = ""
         fresh_params = []
-        if fresh_hours and fresh_hours > 0:
+        if not date_sql and fresh_hours and fresh_hours > 0:
             fresh_sql = " AND crawl_time >= DATE_SUB(NOW(), INTERVAL %s HOUR)"
             fresh_params = [fresh_hours]
 
@@ -241,12 +350,13 @@ def get_hot_weibo(limit: int = 20, min_engagement: int = 0,
             WHERE (like_count + comment_count + repost_count) >= %s
             {ds_sql}
             {kw_sql}
+            {date_sql}
             {time_sql}
             {fresh_sql}
             ORDER BY (like_count + comment_count + repost_count) DESC
             LIMIT %s
         """
-        params = [min_engagement] + ds_params + kw_params + time_params + fresh_params + [limit * 3]
+        params = [min_engagement] + ds_params + kw_params + date_params + time_params + fresh_params + [limit * 3]
         posts = db.fetch_all(sql, tuple(params))
         scored = engine.calc_hotspot(posts, top_n=limit)
         for item in scored:
@@ -255,12 +365,18 @@ def get_hot_weibo(limit: int = 20, min_engagement: int = 0,
                 if hasattr(pt, "timestamp"):
                     item["publish_timestamp"] = int(pt.timestamp() * 1000)
                 elif isinstance(pt, str):
-                    from datetime import datetime
                     try:
                         dt = datetime.fromisoformat(pt.replace("Z", "+00:00"))
                         item["publish_timestamp"] = int(dt.timestamp() * 1000)
                     except Exception:
                         pass
+        try:
+            _enrich_post_ai_fields(scored)
+        except Exception:
+            for _it in scored:
+                _it.setdefault('category', 'news')
+                _it.setdefault('sentiment', None)
+                _it.setdefault('ai_status', 'pending')
         return {"total": len(scored), "data": scored}
 
     return _safe_call(_do, cache_key=cache_key,
@@ -371,7 +487,7 @@ def _lightweight_sentiment(text: str) -> float:
 
 
 def get_sentiment(sample_size: int = 500, keyword: str = None,
-                  dataset_type: Optional[str] = None):
+                  dataset_type: Optional[str] = None, date: Optional[str] = None):
     """
     情感分析（优化版）
     - 默认采样 500 条（原 3000）
@@ -380,7 +496,7 @@ def get_sentiment(sample_size: int = 500, keyword: str = None,
     """
     # 限制最大采样量，防止传入过大值
     sample_size = min(sample_size, 1000)
-    cache_key = f'sentiment:{sample_size}:{keyword or "all"}:{dataset_type or "all"}'
+    cache_key = f'sentiment:{sample_size}:{keyword or "all"}:{dataset_type or "all"}:{date or "all"}'
 
     def _do():
         if dataset_type:
@@ -398,23 +514,27 @@ def get_sentiment(sample_size: int = 500, keyword: str = None,
             """
             base_params = []
 
+        # 可选：限定统计自然日（北京日期，按评论发布时间）
+        date_sql = "\n                  AND DATE(c.created_time) = %s" if date else ""
+        date_params = [date] if date else []
+
         if keyword:
             sql = f"""
                 SELECT c.content, c.username, c.like_count, c.created_time
-                {base_from}
+                {base_from}{date_sql}
                   AND c.content LIKE %s
                 ORDER BY c.created_time DESC
                 LIMIT %s
             """
-            params = tuple(base_params + [f'%{keyword}%', sample_size])
+            params = tuple(base_params + date_params + [f'%{keyword}%', sample_size])
         else:
             sql = f"""
                 SELECT c.content, c.username, c.like_count, c.created_time
-                {base_from}
+                {base_from}{date_sql}
                 ORDER BY c.created_time DESC
                 LIMIT %s
             """
-            params = tuple(base_params + [sample_size])
+            params = tuple(base_params + date_params + [sample_size])
 
         comments = db.fetch_all(sql, params)
 
@@ -519,13 +639,19 @@ def get_daily_report(dataset_type: Optional[str] = None):
     cache_key = f'daily_report:{dataset_type or "all"}'
 
     def _do():
+        # 统计日（前一天，北京自然日）
+        yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+        # AI 行业日报：未显式指定数据集时默认只统计 AI 行业采集库（ai_industry），
+        # 排除早期账号/通用通道的 general_hotspot，避免娱乐等无关历史内容进入日报；
+        # 品牌租户经 Bearer 鉴权后由 tenant.dataset_type 覆盖本默认值。
+        hot_dataset = dataset_type or 'ai_industry'
         # 关键词：固定列表，复用 get_keyword_trend 缓存
         keywords_list = ['豆包', '飞书', 'AI办公', 'Agent', '企业AI',
                          'ChatGPT', '人工智能', '大模型', 'AIGC']
 
         def _kw_stat(kw):
             try:
-                tr = get_keyword_trend(kw, days=30, dataset_type=dataset_type)
+                tr = get_keyword_trend(kw, days=30, dataset_type=hot_dataset)
                 return {
                     'keyword': kw,
                     'post_mentions': tr.get('post_count', 0),
@@ -538,19 +664,15 @@ def get_daily_report(dataset_type: Optional[str] = None):
 
         # 数据概览：轻量 COUNT 查询（统计前一天数据）
         def _counts():
-            yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
             try:
-                if dataset_type:
-                    posts_count = db.fetch_one(
-                        'SELECT COUNT(*) AS c FROM weibo_posts WHERE dataset_type = %s AND DATE(publish_time) = %s',
-                        (dataset_type, yesterday))['c']
-                else:
-                    posts_count = db.fetch_one(
-                        'SELECT COUNT(*) AS c FROM weibo_posts WHERE DATE(publish_time) = %s',
-                        (yesterday,))['c']
+                posts_count = db.fetch_one(
+                    'SELECT COUNT(*) AS c FROM weibo_posts WHERE dataset_type = %s AND DATE(publish_time) = %s',
+                    (hot_dataset, yesterday))['c']
                 comments_count = db.fetch_one(
-                    'SELECT COUNT(*) AS c FROM weibo_comments WHERE DATE(created_time) = %s',
-                    (yesterday,))['c']
+                    '''SELECT COUNT(*) AS c FROM weibo_comments c
+                       INNER JOIN weibo_posts p ON c.weibo_id = p.weibo_id
+                       WHERE p.dataset_type = %s AND DATE(c.created_time) = %s''',
+                    (hot_dataset, yesterday))['c']
                 users_count = db.fetch_one('SELECT COUNT(*) AS c FROM weibo_users')['c']
                 return {'posts': posts_count, 'comments': comments_count, 'users': users_count}
             except Exception:
@@ -559,11 +681,12 @@ def get_daily_report(dataset_type: Optional[str] = None):
         # 所有数据块相互独立、每次查询独立DB连接，一次性并行（热点+9关键词+情感+影响力+统计）
         # 原串行链路（热点→9关键词→情感→影响力→3统计）冷启动约11秒
         with ThreadPoolExecutor(max_workers=14) as ex:
-            f_hot = ex.submit(lambda: get_hot_weibo(limit=20, dataset_type=dataset_type))
+            f_hot = ex.submit(lambda: get_hot_weibo(
+                limit=20, dataset_type=hot_dataset, date=yesterday))
             kw_futs = {kw: ex.submit(_kw_stat, kw) for kw in keywords_list}
-            f_sent = ex.submit(lambda: get_sentiment(sample_size=500, dataset_type=dataset_type))
+            f_sent = ex.submit(lambda: get_sentiment(sample_size=500, dataset_type=hot_dataset, date=yesterday))
             f_inf = ex.submit(lambda: get_influencers(sort_type='followers', limit=20,
-                                                       dataset_type=dataset_type))
+                                                       dataset_type=hot_dataset))
             f_cnt = ex.submit(_counts)
             hotspot = f_hot.result()
             keywords = [kw_futs[kw].result() for kw in keywords_list]
