@@ -63,16 +63,16 @@ async def get_overview():
             FROM follow_records WHERE DATE(follow_time) = CURDATE()''')
         today_follow = cursor.fetchone()['follow_count']
         
-        # 风险客户数
+        # 风险客户数（SQL兜底口径：未成交且超过14天未跟进；下方再用AI分析的权威口径覆盖）
         cursor.execute('''SELECT COUNT(*) as risk_count FROM customers
             WHERE sales_stage NOT IN ('closed', 'lost')
-            AND (stage_changed_time IS NULL 
-                 OR stage_changed_time < DATE_SUB(NOW(), INTERVAL 14 DAY))''')
+            AND (last_follow_time IS NULL
+                 OR last_follow_time < DATE_SUB(NOW(), INTERVAL 14 DAY))''')
         risk_count = cursor.fetchone()['risk_count']
-        
-        # 商机总金额
-        cursor.execute('''SELECT COALESCE(SUM(amount), 0) as total_amount 
-            FROM customers WHERE sales_stage IN ('requirement', 'solution', 'negotiation')''')
+
+        # 在途商机总金额（所有未成交阶段；已成交/已丢单不计入在途）
+        cursor.execute('''SELECT COALESCE(SUM(amount), 0) as total_amount
+            FROM customers WHERE sales_stage NOT IN ('closed', 'lost')''')
         total_amount = cursor.fetchone()['total_amount']
         
         # 销售阶段分布
@@ -98,6 +98,17 @@ async def get_overview():
                     today_tasks = len(_tasks.get('top5_tasks') or [])
         except Exception as _te:
             logger.warning(f'今日任务统计失败，返回0: {_te}')
+
+        # 风险客户数：以AI销售分析口径为准（与"风险客户"页面 /risk 完全一致），失败则沿用上面的SQL兜底
+        try:
+            _an = get_sales_analysis_agent().analyze_all()
+            if isinstance(_an, dict):
+                _rc = (_an.get('summary') or {}).get('risk_count')
+                if _rc is None:
+                    _rc = len(_an.get('risk_customers') or [])
+                risk_count = _rc
+        except Exception as _re:
+            logger.warning(f'AI风险客户统计失败，使用SQL兜底口径: {_re}')
 
         return {
             'status': 'success',

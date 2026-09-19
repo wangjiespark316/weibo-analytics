@@ -53,6 +53,14 @@ def main():
         return r.get('message')
     results['crm_sync'] = step('飞书CRM客户同步', s1)
 
+    # 1b. 飞书跟进记录 + 商机明细同步，并回填客户金额/跟进次数/最近跟进/下一步
+    def s1b():
+        from feishu_crm_detail_sync import main as detail_main
+        r = detail_main()
+        return (f"跟进{r.get('follow')} 商机{r.get('opportunity')} "
+                f"在途金额{r.get('pipeline_amount'):,.0f}")
+    results['crm_detail'] = step('飞书跟进与商机明细同步', s1b)
+
     # 2. AI 客户机会评分（全量重算，按客户唯一键覆盖）
     def s2():
         import customer_scoring
