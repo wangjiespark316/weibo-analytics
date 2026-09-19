@@ -1307,8 +1307,9 @@ tbody tr:hover td {
 .review-card { margin-bottom: 16px; }
 .markdown-content { line-height: 1.8; }
 
-/* ===== 统一线性图标 (Bootstrap Icons v1.11.3, MIT License) ===== */
-.bi-ico{width:1em;height:1em;vertical-align:-0.15em;fill:currentColor;display:inline-block;flex:none;line-height:1;}
-.empty-state-icon .bi-ico{width:44px;height:44px;}
-.dropdown-item-icon .bi-ico{width:18px;height:18px;}
-.dropdown-item-icon-text .bi-ico{width:18px;height:18px;}
+
+/* ===== IconPark 统一线性图标（字节 IconPark outline，currentColor 描边） ===== */
+.ip-ico{width:1em;height:1em;vertical-align:-0.14em;fill:none;stroke:currentColor;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;display:inline-block;flex:none;line-height:1;}
+.empty-state-icon .ip-ico{width:44px;height:44px;}
+.dropdown-item-icon .ip-ico{width:18px;height:18px;}
+.dropdown-item-icon-text .ip-ico{width:18px;height:18px;}
