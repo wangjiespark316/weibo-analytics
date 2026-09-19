@@ -2593,7 +2593,8 @@ const Pages = {
         
         html += '<div class="dashboard-card"><h3>风险客户</h3><div class="risk-list">';
         (an.risk_customers || []).slice(0,5).forEach(function(r) {
-          html += '<div class="risk-item"><div class="risk-icon">⚠️</div><div class="risk-info"><div class="risk-name">' + r.name + '</div><div class="risk-reason">' + (r.risk_reason||'') + '</div></div></div>';
+          var riskReason = (r.risk_reason||'').replace(/\[([a-z_]+)\]/g, function(m,k){ return stageNames[k] ? ('['+stageNames[k]+']') : m; });
+          html += '<div class="risk-item"><div class="risk-icon">⚠️</div><div class="risk-info"><div class="risk-name">' + r.name + '</div><div class="risk-reason">' + riskReason + '</div></div></div>';
         });
         html += '</div></div></div>';
         
@@ -2651,6 +2652,11 @@ const Pages = {
   'workspace-customer-detail': {
     async render(container) {
       const params = Router.currentParams || {};
+      // 防御：缺少客户ID（如直接打开无 ?id= 的详情URL）时不发无效请求，给出友好引导
+      if (!params.id) {
+        container.innerHTML = Components.pageHeader('workspace-customer-detail') + '<div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-text">未指定客户，请从「客户中心」列表选择客户查看详情。</div><button class="btn btn-primary" onclick="Router.navigate(\'workspace-customers\')">返回客户中心</button></div>';
+        return;
+      }
       container.innerHTML = Components.pageHeader('workspace-customer-detail') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载客户详情中...</span></div>';
       try {
         const result = await API.getCustomerDetail(params.id);

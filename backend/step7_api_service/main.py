@@ -15,8 +15,15 @@ FastAPI 微博数据服务入口
 Swagger 文档：/docs
 """
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv('/opt/Weibo-Analyst/.env')
+except Exception:
+    pass
 
 from .routers import hot_weibo, keyword_trend, sentiment, influencers, daily_report, events, products, trends, reports, pipeline, sales, sales_workspace, feishu, sales_dashboard, sales_prediction, crm
 
@@ -44,6 +51,26 @@ app.add_middleware(
     allow_methods=["GET"],
     allow_headers=["*"],
 )
+
+
+# 应用层 API Key 鉴权（纵深防御）：公网由 Nginx 注入/校验 Key，uvicorn 仅监听 127.0.0.1，
+# 此处再兜底一道，防止 8000 端口或本机其他通道被绕过。
+_EXPECTED_API_KEY = os.getenv('WEIBO_API_KEY')
+
+
+@app.middleware("http")
+async def enforce_api_key(request: Request, call_next):
+    """所有 /api/ 业务接口必须携带正确的 X-API-Key；/health、/ 等探针/名片放行。"""
+    if request.method == "OPTIONS":  # CORS 预检放行
+        return await call_next(request)
+    if request.url.path.startswith("/api/"):
+        if not _EXPECTED_API_KEY or request.headers.get("X-API-Key") != _EXPECTED_API_KEY:
+            return JSONResponse(
+                status_code=401,
+                content={"detail": "unauthorized: missing or invalid API key"},
+            )
+    return await call_next(request)
+
 
 # 注册路由
 app.include_router(hot_weibo.router)
