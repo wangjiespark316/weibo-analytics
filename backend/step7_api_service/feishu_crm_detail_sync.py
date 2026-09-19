@@ -133,6 +133,11 @@ def _date(v):
 
 
 def _d(v):
+    # 幂等：入参可能已是 _date() 的结果(date/datetime)，不可再次走数值解析
+    if isinstance(v, datetime):
+        return v.date()
+    if isinstance(v, date):
+        return v
     d = _date(v)
     return d.date() if isinstance(d, datetime) else d
 

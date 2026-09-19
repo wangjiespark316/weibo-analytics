@@ -201,6 +201,7 @@ const MENU_CONFIG = [
     children: [
       { key: 'sales-dashboard', label: '销售驾驶舱', icon: 'dashboard' },
       { key: 'workspace-customers', label: '客户中心', icon: 'users' },
+      { key: 'workspace-opportunities', label: '商机管理', icon: 'report' },
       { key: 'workspace-tasks', label: '今日任务', icon: 'calendar' }
     ]
   }
@@ -431,6 +432,7 @@ const PAGE_INFO = {
   'workspace-customers': { title: '客户中心', breadcrumb: ['销售工作台', '客户中心'], desc: '管理客户信息' },
   'workspace-customer-detail': { title: '客户详情', breadcrumb: ['销售工作台', '客户中心', '客户详情'], desc: '查看客户详细信息、AI画像与跟进记录' },
   'workspace-tasks': { title: '今日任务', breadcrumb: ['销售工作台', '今日任务'], desc: 'AI智能生成今日销售重点任务与行动建议' },
+  'workspace-opportunities': { title: '商机管理', breadcrumb: ['销售工作台', '商机管理'], desc: '管理飞书同步的销售商机，跟踪在途金额、成交阶段与赢单率' },
   'sales-prediction': { title: 'AI销售预测', breadcrumb: ['销售工作台', 'AI销售预测'], desc: 'AI预测客户成交概率，生成推进策略' },
   'sales-funnel': { title: '销售漏斗', breadcrumb: ['销售工作台', '销售漏斗'], desc: '分析销售阶段转化与商机金额' },
   'sales-review': { title: 'AI销售复盘', breadcrumb: ['销售工作台', 'AI销售复盘'], desc: '自动生成销售日报周报月报' },
@@ -2820,6 +2822,88 @@ const Pages = {
         container.innerHTML = html;
       } catch (e) {
         container.innerHTML = Components.pageHeader('sales-funnel') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+      }
+    }
+  },
+
+  'workspace-opportunities': {
+    async render(container) {
+      container.innerHTML = Components.pageHeader('workspace-opportunities') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载商机数据中...</span></div>';
+      try {
+        const res = await fetch('/app-api/crm/opportunities').then(r => r.json());
+        const all = res.opportunities || [];
+        const summary = res.summary || {};
+        const fmtWan = v => { v = Number(v || 0); return Math.abs(v) >= 10000 ? (v / 10000).toFixed(1) + '万' : v.toFixed(0); };
+        const stageColor = { '进行中': ['#DBEAFE', '#2563EB'], '已成交': ['#DCFCE7', '#16A34A'], '已丢单': ['#F1F5F9', '#64748B'] };
+        const card = (icon, bg, color, val, label) => '<div class="metric-card"><div class="metric-icon" style="background:' + bg + ';color:' + color + ';">' + icon + '</div><div class="metric-info"><div class="metric-value">' + val + '</div><div class="metric-label">' + label + '</div></div></div>';
+
+        let curStage = '全部';
+        let curKw = '';
+        let html = Components.pageHeader('workspace-opportunities');
+        html += '<div class="metric-cards">';
+        html += card('🔥', '#DBEAFE', '#2563EB', (summary.open || {}).count || 0, '在途商机 · ' + fmtWan((summary.open || {}).amount || 0));
+        html += card('✅', '#DCFCE7', '#16A34A', (summary.won || {}).count || 0, '已成交 · ' + fmtWan((summary.won || {}).amount || 0));
+        html += card('🚫', '#FEE2E2', '#DC2626', (summary.lost || {}).count || 0, '已丢单 · ' + fmtWan((summary.lost || {}).amount || 0));
+        html += card('📦', '#CCFBF1', '#0D9488', summary.total_count || 0, '商机总数 · ' + fmtWan(summary.total_amount || 0));
+        html += '</div>';
+        html += '<div class="card"><div class="card-header" style="flex-wrap:wrap;gap:12px;"><h3>商机列表</h3>';
+        html += '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto;">';
+        html += '<input id="oppKw" type="text" placeholder="搜索商机 / 客户" style="padding:6px 10px;border:1px solid #CBD5E1;border-radius:6px;font-size:13px;min-width:180px;">';
+        html += '<div id="oppTabs" style="display:flex;gap:6px;flex-wrap:wrap;"></div>';
+        html += '</div></div>';
+        html += '<div class="card-body" style="padding:0;"><div style="overflow-x:auto;"><table class="data-table" style="min-width:1000px;"><colgroup><col style="width:250px"><col style="width:210px"><col style="width:90px"><col style="width:96px"><col style="width:110px"><col style="width:80px"><col style="width:118px"><col style="width:90px"></colgroup><thead><tr><th>商机名称</th><th>客户</th><th>产品线</th><th>阶段</th><th>金额</th><th>赢单率</th><th>关单/成交</th><th>负责人</th></tr></thead><tbody id="oppTbody"></tbody></table></div></div></div>';
+        container.innerHTML = html;
+
+        const stages = ['全部', '进行中', '已成交', '已丢单'];
+        const tabsEl = container.querySelector('#oppTabs');
+        const tbody = container.querySelector('#oppTbody');
+        const kwEl = container.querySelector('#oppKw');
+
+        function tabCount(s) {
+          if (s === '全部') return all.length;
+          const key = s === '进行中' ? 'open' : s === '已成交' ? 'won' : 'lost';
+          return (summary[key] || {}).count || 0;
+        }
+        function renderRows() {
+          let list = all.filter(o => curStage === '全部' || o.stage === curStage);
+          if (curKw) {
+            const k = curKw.trim().toLowerCase();
+            list = list.filter(o => (o.opp_name || '').toLowerCase().includes(k) || (o.company_name || '').toLowerCase().includes(k));
+          }
+          if (list.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#94A3B8;padding:30px;">暂无符合条件的商机</td></tr>';
+            return;
+          }
+          tbody.innerHTML = list.map(o => {
+            const c = stageColor[o.stage] || ['#F1F5F9', '#64748B'];
+            const dt = o.stage === '已成交' ? (o.won_date || '-') : (o.expected_close_date || '-');
+            return '<tr>'
+              + '<td style="min-width:230px;">' + (o.opp_name || '-') + '</td>'
+              + '<td style="white-space:nowrap;"><strong>' + (o.company_name || '-') + '</strong></td>'
+              + '<td>' + (o.product_line || '-') + '</td>'
+              + '<td><span style="padding:2px 10px;border-radius:10px;font-size:12px;background:' + c[0] + ';color:' + c[1] + ';white-space:nowrap;">' + (o.stage || '-') + '</span></td>'
+              + '<td style="font-weight:600;color:#0D9488;white-space:nowrap;">' + fmtWan(o.amount) + '</td>'
+              + '<td style="white-space:nowrap;">' + (o.win_rate || '-') + '</td>'
+              + '<td style="white-space:nowrap;">' + dt + '</td>'
+              + '<td>' + (o.owner || '-') + '</td></tr>';
+          }).join('');
+        }
+        function renderTabs() {
+          tabsEl.innerHTML = stages.map(s => {
+            const active = s === curStage;
+            return '<button data-stage="' + s + '" class="btn ' + (active ? 'btn-primary' : 'btn-outline') + '" style="padding:4px 12px;font-size:12px;">' + s + ' ' + tabCount(s) + '</button>';
+          }).join('');
+          tabsEl.querySelectorAll('[data-stage]').forEach(b => b.addEventListener('click', () => {
+            curStage = b.getAttribute('data-stage');
+            renderTabs();
+            renderRows();
+          }));
+        }
+        kwEl.addEventListener('input', e => { curKw = e.target.value; renderRows(); });
+        renderTabs();
+        renderRows();
+      } catch (e) {
+        container.innerHTML = Components.pageHeader('workspace-opportunities') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
       }
     }
   },

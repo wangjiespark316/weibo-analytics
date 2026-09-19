@@ -18,7 +18,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import hot_weibo, keyword_trend, sentiment, influencers, daily_report, events, products, trends, reports, pipeline, sales, sales_workspace, feishu, sales_dashboard, sales_prediction
+from .routers import hot_weibo, keyword_trend, sentiment, influencers, daily_report, events, products, trends, reports, pipeline, sales, sales_workspace, feishu, sales_dashboard, sales_prediction, crm
 
 app = FastAPI(
     title="微博数据分析 API",
@@ -61,6 +61,7 @@ app.include_router(sales_workspace.router)
 app.include_router(feishu.router)
 app.include_router(sales_dashboard.router)
 app.include_router(sales_prediction.router)
+app.include_router(crm.router)
 
 
 # 注意：已移除 startup 预热，避免 Render 512MB 内存限制下启动 OOM

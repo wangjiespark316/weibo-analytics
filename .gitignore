@@ -67,3 +67,6 @@ Icon?
 # Build output
 *.pptx
 !docs/**/*.pptx
+
+# local backups
+*.bak*
