@@ -341,22 +341,25 @@ class FeishuBitableSync:
                     (c['feishu_record_id'], c['company_name']))
                 existing = cursor.fetchone()
                 if existing:
+                    # last_follow_time 以跟进记录表为唯一权威来源（detail sync 回填），
+                    # 不采信客户主表手填的“最近跟进日期”，避免历史脏值覆盖
                     cursor.execute('''UPDATE customers SET industry=%s, company_size=%s, location=%s,
                         contact_name=%s, contact_role=%s, phone=%s, customer_level=%s, sales_stage=%s,
-                        amount=%s, owner=%s, last_follow_time=%s, notes=%s,
+                        amount=%s, owner=%s, notes=%s,
                         feishu_record_id=COALESCE(feishu_record_id,%s), updated_time=NOW() WHERE id=%s''',
                         (c['industry'], c['company_size'], c['location'], c['contact_name'], c['contact_role'],
                          c['phone'], c['customer_level'], c['sales_stage'], c['amount'], c['owner'],
-                         c['last_follow_time'], c['notes'], c['feishu_record_id'], existing['id']))
+                         c['notes'], c['feishu_record_id'], existing['id']))
                     updated += 1
                 else:
+                    # 新客户 last_follow_time 默认 NULL，由跟进明细同步回填
                     cursor.execute('''INSERT INTO customers (feishu_record_id, company_name, industry, company_size,
                         location, contact_name, contact_role, phone, customer_level, sales_stage, amount, owner,
-                        last_follow_time, notes, created_time, updated_time)
-                        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW(),NOW())''',
+                        notes, created_time, updated_time)
+                        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW(),NOW())''',
                         (c['feishu_record_id'], c['company_name'], c['industry'], c['company_size'], c['location'],
                          c['contact_name'], c['contact_role'], c['phone'], c['customer_level'], c['sales_stage'],
-                         c['amount'], c['owner'], c['last_follow_time'], c['notes']))
+                         c['amount'], c['owner'], c['notes']))
                     inserted += 1
                 conn.commit()
             except Exception as e:

@@ -259,6 +259,19 @@ def get_opportunities(date_str=None, priority=None, industry=None, limit=50):
     return opportunities
 
 
+def get_latest_date():
+    """获取销售机会表中最新的分析日期；无数据返回 None"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT MAX(`date`) AS m FROM ai_sales_opportunities")
+    row = cursor.fetchone()
+    conn.close()
+    if not row or not row.get("m"):
+        return None
+    v = row["m"]
+    return v.isoformat() if hasattr(v, "isoformat") else str(v)
+
+
 def analyze_and_save(date_str=None, force=False):
     """分析并保存当天销售机会"""
     if not date_str:

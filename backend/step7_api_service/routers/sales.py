@@ -11,7 +11,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from sales_opportunity_analyzer import get_opportunities, analyze_and_save
+from sales_opportunity_analyzer import get_opportunities, analyze_and_save, get_latest_date
 from customer_matcher import match_customer_opportunities, get_customer_opportunities, save_customer_opportunity, update_customer_opportunity_status
 from sales_script_generator import generate_sales_script, generate_daily_sales_brief
 from industries import get_all_industries, get_industry_names
@@ -47,6 +47,9 @@ async def get_sales_opportunities(
 ):
     """获取销售机会列表"""
     try:
+        # 未指定日期时默认返回最新一个分析日（与前端“今日机会”口径一致）
+        if not date:
+            date = get_latest_date()
         opportunities = get_opportunities(
             date_str=date,
             priority=priority,

@@ -23,6 +23,7 @@ PIPELINE_STEPS = [
     {"key": "products", "name": "AI产品分析", "description": "分析AI产品声量变化", "max_retries": 2, "retry_interval": 60},
     {"key": "trends", "name": "AI技术趋势分析", "description": "分析AI技术发展趋势", "max_retries": 2, "retry_interval": 60},
     {"key": "report", "name": "AI日报生成", "description": "生成AI行业日报", "max_retries": 2, "retry_interval": 60},
+    {"key": "sales_opp", "name": "AI销售机会分析", "description": "基于事件与趋势生成销售机会", "max_retries": 2, "retry_interval": 60},
 ]
 
 TASK_NAME = "ai_intelligence_pipeline"
@@ -263,6 +264,21 @@ def step_generate_report(date_str):
         return {"status": "failed", "error": str(e), "traceback": traceback.format_exc()[:500]}
 
 
+def step_sales_opportunity(date_str):
+    """步骤6：AI销售机会分析（基于事件/技术趋势，纯规则匹配，无LLM调用，幂等）"""
+    print(f"[{date_str}] 开始AI销售机会分析...")
+    try:
+        from step7_api_service.sales_opportunity_analyzer import analyze_and_save
+        result = analyze_and_save(date_str, force=True)
+        n = len(result) if result is not None else 0
+        print(f"  销售机会分析完成: {n} 条")
+        return {"status": "success", "count": n}
+    except Exception as e:
+        print(f"  销售机会分析失败: {e}")
+        traceback.print_exc()
+        return {"status": "failed", "error": str(e), "traceback": traceback.format_exc()[:500]}
+
+
 # 步骤映射
 STEP_FUNCTIONS = {
     "collect": step_collect_weibo,
@@ -270,6 +286,7 @@ STEP_FUNCTIONS = {
     "products": step_analyze_products,
     "trends": step_analyze_trends,
     "report": step_generate_report,
+    "sales_opp": step_sales_opportunity,
 }
 
 

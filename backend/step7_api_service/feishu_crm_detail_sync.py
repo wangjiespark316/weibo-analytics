@@ -314,11 +314,13 @@ def backfill(cur):
     cur.execute('''UPDATE customers c SET amount = COALESCE((
         SELECT SUM(o.amount) FROM customer_opportunities o
         WHERE o.customer_id = c.id AND o.is_won=0 AND o.is_lost=0), 0)''')
-    cur.execute('''UPDATE customers c JOIN (
+    # last_follow_time/follow_count 以跟进记录表为唯一权威：有记录取真实 MAX，
+    # 无记录置 0/NULL（LEFT JOIN），顺带清除客户主表带入的历史脏日期
+    cur.execute('''UPDATE customers c LEFT JOIN (
         SELECT customer_id, COUNT(*) cnt, MAX(follow_time) last_t
         FROM follow_records WHERE customer_id IS NOT NULL GROUP BY customer_id
     ) x ON x.customer_id = c.id
-    SET c.follow_count = x.cnt, c.last_follow_time = x.last_t''')
+    SET c.follow_count = COALESCE(x.cnt, 0), c.last_follow_time = x.last_t''')
     cur.execute('''SELECT customer_id, next_action FROM follow_records WHERE id IN (
         SELECT MAX(id) FROM follow_records
         WHERE next_action IS NOT NULL AND next_action <> ''
