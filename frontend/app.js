@@ -399,7 +399,7 @@ const Router = {
     } else {
       contentEl.innerHTML = `
         <div class="empty-state">
-          <div class="empty-state-icon">📄</div>
+          <div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/> </svg></div>
           <div class="empty-state-text">页面不存在</div>
         </div>
       `;
@@ -493,7 +493,7 @@ const Components = {
   emptyState(text = '暂无数据') {
     return `
       <div class="empty-state">
-        <div class="empty-state-icon">📭</div>
+        <div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 10 8h4.46l-3.05-3.812A.5.5 0 0 0 11.02 4zm9.954 5H10.45a2.5 2.5 0 0 1-4.9 0H1.066l.32 2.562a.5.5 0 0 0 .497.438h12.234a.5.5 0 0 0 .496-.438zM3.809 3.563A1.5 1.5 0 0 1 4.981 3h6.038a1.5 1.5 0 0 1 1.172.563l3.7 4.625a.5.5 0 0 1 .105.374l-.39 3.124A1.5 1.5 0 0 1 14.117 13H1.883a1.5 1.5 0 0 1-1.489-1.314l-.39-3.124a.5.5 0 0 1 .106-.374z"/> </svg></div>
         <div class="empty-state-text">${text}</div>
       </div>
     `;
@@ -781,7 +781,7 @@ const Pages = {
             <div class="card-body">
               <div style="padding: 8px 0;">
                 <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
-                  <div style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg, var(--primary-light) 0%, #F0FDFA 100%);display:grid;place-items:center;font-size:24px;">📊</div>
+                  <div style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg, var(--primary-light) 0%, #F0FDFA 100%);display:grid;place-items:center;font-size:24px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg></div>
                   <div>
                     <div style="font-size:16px;font-weight:600;margin-bottom:2px;">${new Date(Date.now() - 86400000).toLocaleDateString("zh-CN", {year:"numeric", month:"long", day:"numeric"})} 日报</div>
                     <div style="font-size:12px;color:var(--text-secondary);">AI 自动生成 · 已分析 ${totalAnalyzed} 条微博</div>
@@ -834,25 +834,25 @@ const Pages = {
           <div class="card-body">
             <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
               <div style="text-align:center;padding:16px;background:var(--bg);border-radius:8px;">
-                <div style="font-size:24px;margin-bottom:4px;">📡</div>
+                <div style="font-size:24px;margin-bottom:4px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M6.634 1.135A7 7 0 0 1 15 8a.5.5 0 0 1-1 0 6 6 0 1 0-6.5 5.98v-1.005A5 5 0 1 1 13 8a.5.5 0 0 1-1 0 4 4 0 1 0-4.5 3.969v-1.011A2.999 2.999 0 1 1 11 8a.5.5 0 0 1-1 0 2 2 0 1 0-2.5 1.936v-1.07a1 1 0 1 1 1 0V15.5a.5.5 0 0 1-1 0v-.518a7 7 0 0 1-.866-13.847"/> </svg></div>
                 <div style="font-size:13px;font-weight:600;margin-bottom:2px;">数据采集</div>
                 <div style="font-size:11px;color:var(--text-secondary);">每天 08:00 自动执行</div>
                 <div style="margin-top:8px;">${Components.tag('正常运行', 'green')}</div>
               </div>
               <div style="text-align:center;padding:16px;background:var(--bg);border-radius:8px;">
-                <div style="font-size:24px;margin-bottom:4px;">🤖</div>
+                <div style="font-size:24px;margin-bottom:4px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.6 26.6 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.93.93 0 0 1-.765.935c-.845.147-2.34.346-4.235.346s-3.39-.2-4.235-.346A.93.93 0 0 1 3 9.219zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a25 25 0 0 1-1.871-.183.25.25 0 0 0-.068.495c.55.076 1.232.149 2.02.193a.25.25 0 0 0 .189-.071l.754-.736.847 1.71a.25.25 0 0 0 .404.062l.932-.97a25 25 0 0 0 1.922-.188.25.25 0 0 0-.068-.495c-.538.074-1.207.145-1.98.189a.25.25 0 0 0-.166.076l-.754.785-.842-1.7a.25.25 0 0 0-.182-.135"/> <path d="M8.5 1.866a1 1 0 1 0-1 0V3h-2A4.5 4.5 0 0 0 1 7.5V8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1v-.5A4.5 4.5 0 0 0 10.5 3h-2zM14 7.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.5A3.5 3.5 0 0 1 5.5 4h5A3.5 3.5 0 0 1 14 7.5"/> </svg></div>
                 <div style="font-size:13px;font-weight:600;margin-bottom:2px;">AI分析</div>
                 <div style="font-size:11px;color:var(--text-secondary);">情感分析+热点提取</div>
                 <div style="margin-top:8px;">${Components.tag('正常运行', 'green')}</div>
               </div>
               <div style="text-align:center;padding:16px;background:var(--bg);border-radius:8px;">
-                <div style="font-size:24px;margin-bottom:4px;">📊</div>
+                <div style="font-size:24px;margin-bottom:4px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg></div>
                 <div style="font-size:13px;font-weight:600;margin-bottom:2px;">日报生成</div>
                 <div style="font-size:11px;color:var(--text-secondary);">每日自动生成报告</div>
                 <div style="margin-top:8px;">${Components.tag('今日已生成', 'green')}</div>
               </div>
               <div style="text-align:center;padding:16px;background:var(--bg);border-radius:8px;">
-                <div style="font-size:24px;margin-bottom:4px;">🔔</div>
+                <div style="font-size:24px;margin-bottom:4px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/> </svg></div>
                 <div style="font-size:13px;font-weight:600;margin-bottom:2px;">飞书推送</div>
                 <div style="font-size:11px;color:var(--text-secondary);">报告自动推送到飞书</div>
                 <div style="margin-top:8px;">${Components.tag('已配置', 'blue')}</div>
@@ -868,15 +868,15 @@ const Pages = {
         
         <!-- 产品介绍横幅 -->
         <div style="background:linear-gradient(135deg, #0D9488 0%, #14B8A6 100%);border-radius:12px;padding:28px 32px;margin-bottom:20px;color:white;position:relative;overflow:hidden;">
-          <div style="position:absolute;right:-20px;top:-20px;font-size:120px;opacity:0.1;">📊</div>
+          <div style="position:absolute;right:-20px;top:-20px;font-size:120px;opacity:0.1;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg></div>
           <div style="position:relative;z-index:1;">
             <div style="font-size:22px;font-weight:700;margin-bottom:6px;">微博智能分析平台</div>
             <div style="font-size:14px;opacity:0.9;margin-bottom:16px;">基于 AI 的微博舆情分析与热点洞察平台，助力企业实时掌握市场动态与用户情感</div>
             <div style="display:flex;gap:12px;flex-wrap:wrap;">
-              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;">🤖 AI情感分析</span>
-              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;">🔥 热点趋势追踪</span>
-              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;">📝 每日AI报告</span>
-              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;">👥 KOL影响力分析</span>
+              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.6 26.6 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.93.93 0 0 1-.765.935c-.845.147-2.34.346-4.235.346s-3.39-.2-4.235-.346A.93.93 0 0 1 3 9.219zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a25 25 0 0 1-1.871-.183.25.25 0 0 0-.068.495c.55.076 1.232.149 2.02.193a.25.25 0 0 0 .189-.071l.754-.736.847 1.71a.25.25 0 0 0 .404.062l.932-.97a25 25 0 0 0 1.922-.188.25.25 0 0 0-.068-.495c-.538.074-1.207.145-1.98.189a.25.25 0 0 0-.166.076l-.754.785-.842-1.7a.25.25 0 0 0-.182-.135"/> <path d="M8.5 1.866a1 1 0 1 0-1 0V3h-2A4.5 4.5 0 0 0 1 7.5V8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1v-.5A4.5 4.5 0 0 0 10.5 3h-2zM14 7.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.5A3.5 3.5 0 0 1 5.5 4h5A3.5 3.5 0 0 1 14 7.5"/> </svg> AI情感分析</span>
+              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16m0-1c-1.657 0-3-1-3-2.75 0-.75.25-2 1.25-3C6.125 10 7 10.5 7 10.5c-.375-1.25.5-3.25 2-3.5-.179 1-.25 2 1 3 .625.5 1 1.364 1 2.25C11 14 9.657 15 8 15"/> </svg> 热点趋势追踪</span>
+              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/> <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/> </svg> 每日AI报告</span>
+              <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;font-size:12px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/> </svg> KOL影响力分析</span>
             </div>
           </div>
         </div>
@@ -884,11 +884,11 @@ const Pages = {
         <!-- 核心能力 -->
         <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;">
           ${[
-            {icon:'📡', title:'数据采集', desc:'自动采集微博热门内容', route:'weibo-data'},
-            {icon:'📈', title:'热点趋势', desc:'实时追踪关键词热度变化', route:'trend'},
-            {icon:'💭', title:'舆情分析', desc:'AI识别正面/负面情感倾向', route:'sentiment'},
-            {icon:'🤖', title:'AI日报', desc:'每日自动生成舆情分析报告', route:'daily-report'},
-            {icon:'👥', title:'用户分析', desc:'KOL影响力排行与用户画像', route:'user-data'}
+            {icon:'<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M6.634 1.135A7 7 0 0 1 15 8a.5.5 0 0 1-1 0 6 6 0 1 0-6.5 5.98v-1.005A5 5 0 1 1 13 8a.5.5 0 0 1-1 0 4 4 0 1 0-4.5 3.969v-1.011A2.999 2.999 0 1 1 11 8a.5.5 0 0 1-1 0 2 2 0 1 0-2.5 1.936v-1.07a1 1 0 1 1 1 0V15.5a.5.5 0 0 1-1 0v-.518a7 7 0 0 1-.866-13.847"/> </svg>', title:'数据采集', desc:'自动采集微博热门内容', route:'weibo-data'},
+            {icon:'<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/> </svg>', title:'热点趋势', desc:'实时追踪关键词热度变化', route:'trend'},
+            {icon:'<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/> <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/> </svg>', title:'舆情分析', desc:'AI识别正面/负面情感倾向', route:'sentiment'},
+            {icon:'<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.6 26.6 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.93.93 0 0 1-.765.935c-.845.147-2.34.346-4.235.346s-3.39-.2-4.235-.346A.93.93 0 0 1 3 9.219zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a25 25 0 0 1-1.871-.183.25.25 0 0 0-.068.495c.55.076 1.232.149 2.02.193a.25.25 0 0 0 .189-.071l.754-.736.847 1.71a.25.25 0 0 0 .404.062l.932-.97a25 25 0 0 0 1.922-.188.25.25 0 0 0-.068-.495c-.538.074-1.207.145-1.98.189a.25.25 0 0 0-.166.076l-.754.785-.842-1.7a.25.25 0 0 0-.182-.135"/> <path d="M8.5 1.866a1 1 0 1 0-1 0V3h-2A4.5 4.5 0 0 0 1 7.5V8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1v-.5A4.5 4.5 0 0 0 10.5 3h-2zM14 7.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.5A3.5 3.5 0 0 1 5.5 4h5A3.5 3.5 0 0 1 14 7.5"/> </svg>', title:'AI日报', desc:'每日自动生成舆情分析报告', route:'daily-report'},
+            {icon:'<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/> </svg>', title:'用户分析', desc:'KOL影响力排行与用户画像', route:'user-data'}
           ].map(cap => `
             <div onclick="Router.navigate('${cap.route}')" style="background:white;border:1px solid var(--border-light);border-radius:10px;padding:16px;cursor:pointer;transition:var(--transition);" onmouseover="this.style.boxShadow='var(--shadow-card-hover)';this.style.borderColor='var(--primary)'" onmouseout="this.style.boxShadow='var(--shadow-card)';this.style.borderColor='var(--border-light)'">
               <div style="font-size:24px;margin-bottom:8px;">${cap.icon}</div>
@@ -900,14 +900,14 @@ const Pages = {
         
         <!-- Demo引导流程 -->
         <div style="background:white;border:1px solid var(--border-light);border-radius:10px;padding:20px 24px;margin-bottom:20px;">
-          <div style="font-size:14px;font-weight:600;margin-bottom:16px;color:var(--text);">🔄 产品工作流程</div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:16px;color:var(--text);"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/> <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/> </svg> 产品工作流程</div>
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
             ${[
-              {step:'1', title:'数据采集', desc:'每天自动采集微博', icon:'📡'},
-              {step:'2', title:'数据清洗', desc:'去重、分类、结构化', icon:'🧹'},
-              {step:'3', title:'AI分析', desc:'情感分析+关键词提取', icon:'🤖'},
-              {step:'4', title:'热点发现', desc:'识别热议话题与趋势', icon:'🔥'},
-              {step:'5', title:'报告生成', desc:'自动输出每日洞察', icon:'📊'}
+              {step:'1', title:'数据采集', desc:'每天自动采集微博', icon:'<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M6.634 1.135A7 7 0 0 1 15 8a.5.5 0 0 1-1 0 6 6 0 1 0-6.5 5.98v-1.005A5 5 0 1 1 13 8a.5.5 0 0 1-1 0 4 4 0 1 0-4.5 3.969v-1.011A2.999 2.999 0 1 1 11 8a.5.5 0 0 1-1 0 2 2 0 1 0-2.5 1.936v-1.07a1 1 0 1 1 1 0V15.5a.5.5 0 0 1-1 0v-.518a7 7 0 0 1-.866-13.847"/> </svg>'},
+              {step:'2', title:'数据清洗', desc:'去重、分类、结构化', icon:'<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/> </svg>'},
+              {step:'3', title:'AI分析', desc:'情感分析+关键词提取', icon:'<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.6 26.6 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.93.93 0 0 1-.765.935c-.845.147-2.34.346-4.235.346s-3.39-.2-4.235-.346A.93.93 0 0 1 3 9.219zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a25 25 0 0 1-1.871-.183.25.25 0 0 0-.068.495c.55.076 1.232.149 2.02.193a.25.25 0 0 0 .189-.071l.754-.736.847 1.71a.25.25 0 0 0 .404.062l.932-.97a25 25 0 0 0 1.922-.188.25.25 0 0 0-.068-.495c-.538.074-1.207.145-1.98.189a.25.25 0 0 0-.166.076l-.754.785-.842-1.7a.25.25 0 0 0-.182-.135"/> <path d="M8.5 1.866a1 1 0 1 0-1 0V3h-2A4.5 4.5 0 0 0 1 7.5V8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1v-.5A4.5 4.5 0 0 0 10.5 3h-2zM14 7.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.5A3.5 3.5 0 0 1 5.5 4h5A3.5 3.5 0 0 1 14 7.5"/> </svg>'},
+              {step:'4', title:'热点发现', desc:'识别热议话题与趋势', icon:'<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16m0-1c-1.657 0-3-1-3-2.75 0-.75.25-2 1.25-3C6.125 10 7 10.5 7 10.5c-.375-1.25.5-3.25 2-3.5-.179 1-.25 2 1 3 .625.5 1 1.364 1 2.25C11 14 9.657 15 8 15"/> </svg>'},
+              {step:'5', title:'报告生成', desc:'自动输出每日洞察', icon:'<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg>'}
             ].map((item, idx) => `
               <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:120px;">
                 <div style="text-align:center;">
@@ -1475,7 +1475,7 @@ const Pages = {
               </div>
             ` : `
               <div style="padding:60px 20px;text-align:center;">
-                <div style="font-size:48px;margin-bottom:16px;">📊</div>
+                <div style="font-size:48px;margin-bottom:16px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg></div>
                 <div style="font-size:16px;font-weight:600;margin-bottom:8px;">暂无热点数据</div>
                 <div style="font-size:13px;color:var(--text-secondary);">当前采集的微博中未检测到话题标签，等待更多数据采集</div>
               </div>
@@ -1884,7 +1884,7 @@ const Pages = {
           </div>
           <div class="card-body">
             <div style="padding:40px 20px;text-align:center;margin-bottom:30px;">
-              <div style="font-size:48px;margin-bottom:16px;">📡</div>
+              <div style="font-size:48px;margin-bottom:16px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M6.634 1.135A7 7 0 0 1 15 8a.5.5 0 0 1-1 0 6 6 0 1 0-6.5 5.98v-1.005A5 5 0 1 1 13 8a.5.5 0 0 1-1 0 4 4 0 1 0-4.5 3.969v-1.011A2.999 2.999 0 1 1 11 8a.5.5 0 0 1-1 0 2 2 0 1 0-2.5 1.936v-1.07a1 1 0 1 1 1 0V15.5a.5.5 0 0 1-1 0v-.518a7 7 0 0 1-.866-13.847"/> </svg></div>
               <div style="font-size:16px;font-weight:600;margin-bottom:8px;">当前版本未开放任务记录</div>
               <div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">采集任务由系统自动执行，执行记录功能企业版开放</div>
               <div style="display:inline-flex;gap:8px;flex-wrap:wrap;justify-content:center;">
@@ -1906,7 +1906,7 @@ const Pages = {
                 <div>${Components.tag('运行中', 'green')}</div>
               </div>
               <div style="display:flex;align-items:center;gap:16px;padding:12px 0;">
-                <div style="width:40px;height:40px;border-radius:8px;background:var(--primary-light);display:grid;place-items:center;font-size:18px;">📱</div>
+                <div style="width:40px;height:40px;border-radius:8px;background:var(--primary-light);display:grid;place-items:center;font-size:18px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/> <path d="M8 14a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/> </svg></div>
                 <div style="flex:1;">
                   <div style="font-weight:500;font-size:14px;">手机住宅 IP 代理采集</div>
                   <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">微博采集通过手机住宅 IP 执行，确保数据稳定性</div>
@@ -1932,7 +1932,7 @@ const Pages = {
           </div>
           <div class="card-body">
             <div style="padding:40px 20px;text-align:center;margin-bottom:30px;">
-              <div style="font-size:48px;margin-bottom:16px;">🤖</div>
+              <div style="font-size:48px;margin-bottom:16px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.6 26.6 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.93.93 0 0 1-.765.935c-.845.147-2.34.346-4.235.346s-3.39-.2-4.235-.346A.93.93 0 0 1 3 9.219zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a25 25 0 0 1-1.871-.183.25.25 0 0 0-.068.495c.55.076 1.232.149 2.02.193a.25.25 0 0 0 .189-.071l.754-.736.847 1.71a.25.25 0 0 0 .404.062l.932-.97a25 25 0 0 0 1.922-.188.25.25 0 0 0-.068-.495c-.538.074-1.207.145-1.98.189a.25.25 0 0 0-.166.076l-.754.785-.842-1.7a.25.25 0 0 0-.182-.135"/> <path d="M8.5 1.866a1 1 0 1 0-1 0V3h-2A4.5 4.5 0 0 0 1 7.5V8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1v-.5A4.5 4.5 0 0 0 10.5 3h-2zM14 7.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.5A3.5 3.5 0 0 1 5.5 4h5A3.5 3.5 0 0 1 14 7.5"/> </svg></div>
               <div style="font-size:16px;font-weight:600;margin-bottom:8px;">当前版本未开放任务记录</div>
               <div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">AI分析任务由系统自动执行，任务管理功能企业版开放</div>
               <div style="display:inline-flex;gap:8px;flex-wrap:wrap;justify-content:center;">
@@ -1946,7 +1946,7 @@ const Pages = {
             <div style="background:var(--bg);border-radius:8px;padding:20px;">
               <div style="font-weight:600;margin-bottom:16px;font-size:14px;">系统自动分析能力</div>
               <div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--border-light);">
-                <div style="width:40px;height:40px;border-radius:8px;background:var(--primary-light);display:grid;place-items:center;font-size:18px;">📊</div>
+                <div style="width:40px;height:40px;border-radius:8px;background:var(--primary-light);display:grid;place-items:center;font-size:18px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg></div>
                 <div style="flex:1;">
                   <div style="font-weight:500;font-size:14px;">AI 情感分析</div>
                   <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">自动分析微博正面/中性/负面情感占比，支持千级样本分析</div>
@@ -1954,7 +1954,7 @@ const Pages = {
                 <div>${Components.tag('自动执行', 'green')}</div>
               </div>
               <div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--border-light);">
-                <div style="width:40px;height:40px;border-radius:8px;background:var(--primary-light);display:grid;place-items:center;font-size:18px;">📈</div>
+                <div style="width:40px;height:40px;border-radius:8px;background:var(--primary-light);display:grid;place-items:center;font-size:18px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/> </svg></div>
                 <div style="flex:1;">
                   <div style="font-weight:500;font-size:14px;">关键词趋势分析</div>
                   <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">追踪指定关键词的热度变化趋势，支持 7/30/90 天数据</div>
@@ -1962,7 +1962,7 @@ const Pages = {
                 <div>${Components.tag('自动执行', 'green')}</div>
               </div>
               <div style="display:flex;align-items:center;gap:16px;padding:12px 0;">
-                <div style="width:40px;height:40px;border-radius:8px;background:var(--primary-light);display:grid;place-items:center;font-size:18px;">📝</div>
+                <div style="width:40px;height:40px;border-radius:8px;background:var(--primary-light);display:grid;place-items:center;font-size:18px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/> <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/> </svg></div>
                 <div style="flex:1;">
                   <div style="font-weight:500;font-size:14px;">AI 每日报告生成</div>
                   <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">每天自动生成舆情分析日报，包含热点 TOP、情感分布、AI 洞察</div>
@@ -1999,7 +1999,7 @@ const Pages = {
           <div class="card-body" style="padding:0;">
             <div style="padding:16px 20px;background:var(--bg);border-bottom:1px solid var(--border-light);">
               <div style="font-size:13px;color:var(--text-secondary);">
-                ⚠️ 当前为系统内置定时任务，不可在前端修改。如需调整执行时间，请联系系统管理员。
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg> 当前为系统内置定时任务，不可在前端修改。如需调整执行时间，请联系系统管理员。
               </div>
             </div>
             <div class="table-wrapper">
@@ -2064,7 +2064,7 @@ const Pages = {
           <div class="card-body" style="padding:0;">
             <div style="padding:16px 20px;background:var(--bg);border-bottom:1px solid var(--border-light);">
               <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
-                💡 前端 Dashboard 通过 <code style="background:white;padding:1px 6px;border-radius:4px;">/app-api/</code> 内部代理访问数据，Nginx 自动注入 API Key，前端代码不暴露密钥。<br>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6m6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1"/> </svg> 前端 Dashboard 通过 <code style="background:white;padding:1px 6px;border-radius:4px;">/app-api/</code> 内部代理访问数据，Nginx 自动注入 API Key，前端代码不暴露密钥。<br>
                 第三方系统集成请使用 <code style="background:white;padding:1px 6px;border-radius:4px;">/api/</code> 接口，需在请求头携带下方 API Key。
               </div>
             </div>
@@ -2104,7 +2104,7 @@ const Pages = {
           </div>
           <div class="card-body">
             <div style="padding:40px 20px;text-align:center;">
-              <div style="font-size:48px;margin-bottom:16px;">📊</div>
+              <div style="font-size:48px;margin-bottom:16px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg></div>
               <div style="font-size:16px;font-weight:600;margin-bottom:8px;">当前版本未开放调用统计</div>
               <div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">API调用统计功能企业版开放，支持调用量、成功率、响应时间统计</div>
               <div style="display:inline-flex;gap:8px;flex-wrap:wrap;justify-content:center;">
@@ -2123,7 +2123,7 @@ const Pages = {
           <div class="card-body">
             <div style="font-size:13px;line-height:1.8;">
               <div style="margin-bottom:16px;padding:12px 16px;background:var(--primary-lighter);border-radius:8px;border-left:3px solid var(--primary);">
-                <div style="font-weight:600;margin-bottom:4px;color:var(--primary);">🔒 安全架构说明</div>
+                <div style="font-weight:600;margin-bottom:4px;color:var(--primary);"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/> <path d="M9.5 6.5a1.5 1.5 0 0 1-1 1.415l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99a1.5 1.5 0 1 1 2-1.415"/> </svg> 安全架构说明</div>
                 <div style="color:var(--text-secondary);font-size:12px;line-height:1.6;">
                   前端使用 <code>/app-api/</code> 内部代理（Nginx自动注入Key，Referer校验，60次/分钟限流）<br>
                   外部集成使用 <code>/api/</code> 接口（需携带X-API-Key，30次/分钟限流）
@@ -2163,7 +2163,7 @@ const Pages = {
           </div>
           <div class="card-body">
             <div style="padding:40px 20px;text-align:center;margin-bottom:30px;">
-              <div style="font-size:48px;margin-bottom:16px;">👥</div>
+              <div style="font-size:48px;margin-bottom:16px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/> </svg></div>
               <div style="font-size:16px;font-weight:600;margin-bottom:8px;">多用户体系开发中</div>
               <div style="font-size:13px;color:var(--text-secondary);">当前系统使用 API Key 认证，企业版将支持完整的多用户登录与管理体系</div>
             </div>
@@ -2173,7 +2173,7 @@ const Pages = {
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                 <div style="background:white;padding:16px;border-radius:8px;border:1px solid var(--border-light);">
                   <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                    <span style="font-size:20px;">🔐</span>
+                    <span style="font-size:20px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2M2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/> </svg></span>
                     <span style="font-weight:600;font-size:14px;">用户登录</span>
                   </div>
                   <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
@@ -2182,7 +2182,7 @@ const Pages = {
                 </div>
                 <div style="background:white;padding:16px;border-radius:8px;border:1px solid var(--border-light);">
                   <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                    <span style="font-size:20px;">👤</span>
+                    <span style="font-size:20px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/> </svg></span>
                     <span style="font-weight:600;font-size:14px;">用户生命周期</span>
                   </div>
                   <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
@@ -2191,7 +2191,7 @@ const Pages = {
                 </div>
                 <div style="background:white;padding:16px;border-radius:8px;border:1px solid var(--border-light);">
                   <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                    <span style="font-size:20px;">🏢</span>
+                    <span style="font-size:20px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/> <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3z"/> </svg></span>
                     <span style="font-weight:600;font-size:14px;">组织架构</span>
                   </div>
                   <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
@@ -2200,7 +2200,7 @@ const Pages = {
                 </div>
                 <div style="background:white;padding:16px;border-radius:8px;border:1px solid var(--border-light);">
                   <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                    <span style="font-size:20px;">🔔</span>
+                    <span style="font-size:20px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/> </svg></span>
                     <span style="font-weight:600;font-size:14px;">通知中心</span>
                   </div>
                   <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
@@ -2230,7 +2230,7 @@ const Pages = {
           </div>
           <div class="card-body">
             <div style="padding:40px 20px;text-align:center;margin-bottom:30px;">
-              <div style="font-size:48px;margin-bottom:16px;">🔐</div>
+              <div style="font-size:48px;margin-bottom:16px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2M2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/> </svg></div>
               <div style="font-size:16px;font-weight:600;margin-bottom:8px;">细粒度权限体系开发中</div>
               <div style="font-size:13px;color:var(--text-secondary);">当前所有 API Key 具有相同权限，企业版将支持完整的角色权限与多租户体系</div>
             </div>
@@ -2240,7 +2240,7 @@ const Pages = {
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                 <div style="background:white;padding:16px;border-radius:8px;border:1px solid var(--border-light);">
                   <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                    <span style="font-size:20px;">🎭</span>
+                    <span style="font-size:20px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m.256 7a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1zm3.63-4.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382zM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0"/> </svg></span>
                     <span style="font-weight:600;font-size:14px;">角色权限</span>
                   </div>
                   <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
@@ -2249,7 +2249,7 @@ const Pages = {
                 </div>
                 <div style="background:white;padding:16px;border-radius:8px;border:1px solid var(--border-light);">
                   <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                    <span style="font-size:20px;">📋</span>
+                    <span style="font-size:20px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M2 2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V3a.5.5 0 0 0-.5-.5zM3 3H2v1h1z"/> <path d="M5 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M5.5 7a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 4a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1z"/> <path fill-rule="evenodd" d="M1.5 7a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5zM2 7h1v1H2zm0 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm1 .5H2v1h1z"/> </svg></span>
                     <span style="font-weight:600;font-size:14px;">数据权限</span>
                   </div>
                   <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
@@ -2258,7 +2258,7 @@ const Pages = {
                 </div>
                 <div style="background:white;padding:16px;border-radius:8px;border:1px solid var(--border-light);">
                   <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                    <span style="font-size:20px;">🏢</span>
+                    <span style="font-size:20px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/> <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3z"/> </svg></span>
                     <span style="font-weight:600;font-size:14px;">多租户能力</span>
                   </div>
                   <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
@@ -2267,7 +2267,7 @@ const Pages = {
                 </div>
                 <div style="background:white;padding:16px;border-radius:8px;border:1px solid var(--border-light);">
                   <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                    <span style="font-size:20px;">📝</span>
+                    <span style="font-size:20px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/> <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/> </svg></span>
                     <span style="font-weight:600;font-size:14px;">操作审计</span>
                   </div>
                   <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
@@ -2279,7 +2279,7 @@ const Pages = {
             
             <div style="margin-top:24px;padding:20px;background:linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);border-radius:8px;">
               <div style="display:flex;align-items:center;gap:12px;">
-                <span style="font-size:24px;">🚀</span>
+                <span style="font-size:24px;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M9.752 6.193c.599.6 1.73.437 2.528-.362s.96-1.932.362-2.531c-.599-.6-1.73-.438-2.528.361-.798.8-.96 1.933-.362 2.532"/> <path d="M15.811 3.312c-.363 1.534-1.334 3.626-3.64 6.218l-.24 2.408a2.56 2.56 0 0 1-.732 1.526L8.817 15.85a.51.51 0 0 1-.867-.434l.27-1.899c.04-.28-.013-.593-.131-.956a9 9 0 0 0-.249-.657l-.082-.202c-.815-.197-1.578-.662-2.191-1.277-.614-.615-1.079-1.379-1.275-2.195l-.203-.083a10 10 0 0 0-.655-.248c-.363-.119-.675-.172-.955-.132l-1.896.27A.51.51 0 0 1 .15 7.17l2.382-2.386c.41-.41.947-.67 1.524-.734h.006l2.4-.238C9.005 1.55 11.087.582 12.623.208c.89-.217 1.59-.232 2.08-.188.244.023.435.06.57.093q.1.026.16.045c.184.06.279.13.351.295l.029.073a3.5 3.5 0 0 1 .157.721c.055.485.051 1.178-.159 2.065m-4.828 7.475.04-.04-.107 1.081a1.54 1.54 0 0 1-.44.913l-1.298 1.3.054-.38c.072-.506-.034-.993-.172-1.418a9 9 0 0 0-.164-.45c.738-.065 1.462-.38 2.087-1.006M5.205 5c-.625.626-.94 1.351-1.004 2.09a9 9 0 0 0-.45-.164c-.424-.138-.91-.244-1.416-.172l-.38.054 1.3-1.3c.245-.246.566-.401.91-.44l1.08-.107zm9.406-3.961c-.38-.034-.967-.027-1.746.163-1.558.38-3.917 1.496-6.937 4.521-.62.62-.799 1.34-.687 2.051.107.676.483 1.362 1.048 1.928.564.565 1.25.941 1.924 1.049.71.112 1.429-.067 2.048-.688 3.079-3.083 4.192-5.444 4.556-6.987.183-.771.18-1.345.138-1.713a3 3 0 0 0-.045-.283 3 3 0 0 0-.3-.041Z"/> <path d="M7.009 12.139a7.6 7.6 0 0 1-1.804-1.352A7.6 7.6 0 0 1 3.794 8.86c-1.102.992-1.965 5.054-1.839 5.18.125.126 3.936-.896 5.054-1.902Z"/> </svg></span>
                 <div>
                   <div style="font-weight:600;font-size:14px;margin-bottom:2px;">企业版功能路线图</div>
                   <div style="font-size:12px;color:var(--text-secondary);">用户体系 → 权限管理 → 多租户 → 操作审计 → 自定义报表 → 开放平台</div>
@@ -2320,7 +2320,7 @@ const Pages = {
         html += '</div>';
         
         if (events.length === 0) {
-          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">暂无AI事件数据，等待每日自动分析</div></div></div></div>';
+          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg></div><div class="empty-state-text">暂无AI事件数据，等待每日自动分析</div></div></div></div>';
         } else {
           html += '<div class="card"><div class="card-header"><h3>AI行业事件列表</h3><div style="font-size:13px;color:#999;font-weight:normal">数据日期：' + (result.date||'--') + '</div></div><div class="card-body">';
           events.forEach((e, idx) => {
@@ -2336,10 +2336,10 @@ const Pages = {
             html += '</div>';
             html += '<p style="margin:4px 0;color:#666;font-size:14px">' + (e.summary || '') + '</p>';
             html += '<div style="display:flex;gap:20px;margin-top:8px;font-size:13px">';
-            html += '<span>🔥 热度: <strong style="color:#e74c3c">' + heat + '</strong></span>';
-            html += '<span>✅ 可信度: <strong style="color:' + confColor + '">' + conf + '%</strong></span>';
+            html += '<span><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16m0-1c-1.657 0-3-1-3-2.75 0-.75.25-2 1.25-3C6.125 10 7 10.5 7 10.5c-.375-1.25.5-3.25 2-3.5-.179 1-.25 2 1 3 .625.5 1 1.364 1 2.25C11 14 9.657 15 8 15"/> </svg> 热度: <strong style="color:#e74c3c">' + heat + '</strong></span>';
+            html += '<span><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/> </svg> 可信度: <strong style="color:' + confColor + '">' + conf + '%</strong></span>';
             if (e.companies && e.companies.length) {
-              html += '<span>🏢 涉及: ' + e.companies.slice(0,3).join(', ') + '</span>';
+              html += '<span><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/> <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3z"/> </svg> 涉及: ' + e.companies.slice(0,3).join(', ') + '</span>';
             }
             html += '</div>';
             if (e.impact_analysis) {
@@ -2354,7 +2354,7 @@ const Pages = {
         }
         container.innerHTML = html;
       } catch (e) {
-        container.innerHTML = Components.pageHeader('events') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+        container.innerHTML = Components.pageHeader('events') + '<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
       }
     }
   },
@@ -2377,7 +2377,7 @@ const Pages = {
         html += '</div>';
         
         if (products.length === 0) {
-          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">暂无产品数据，等待每日自动分析</div></div></div></div>';
+          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg></div><div class="empty-state-text">暂无产品数据，等待每日自动分析</div></div></div></div>';
         } else {
           html += '<div class="card"><div class="card-header"><h3>AI产品热度排行榜</h3><div style="font-size:13px;color:#999;font-weight:normal">数据日期：' + (result.date||'--') + '</div></div><div class="card-body"><div class="table-container"><table class="data-table"><thead><tr><th>排名</th><th>产品</th><th>公司</th><th>地区</th><th>提及数</th><th>热度</th><th>趋势</th><th>主要情绪</th><th>变化原因</th></tr></thead><tbody>';
           
@@ -2392,7 +2392,7 @@ const Pages = {
             html += '<td><strong style="font-size:18px;color:#0D9488">' + (p.rank || '-') + '</strong></td>';
             html += '<td><strong>' + (p.name || '-') + '</strong><br><small style="color:#999">' + (p.category || '') + '</small></td>';
             html += '<td>' + (p.company || '-') + '</td>';
-            html += '<td>' + (p.country === 'CN' ? '🇨🇳 国内' : '🌍 国外') + '</td>';
+            html += '<td>' + (p.country === 'CN' ? '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/> <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/> </svg> 国内' : '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m7.5-6.923c-.67.204-1.335.82-1.887 1.855q-.215.403-.395.872c.705.157 1.472.257 2.282.287zM4.249 3.539q.214-.577.481-1.078a7 7 0 0 1 .597-.933A7 7 0 0 0 3.051 3.05q.544.277 1.198.49zM3.509 7.5c.036-1.07.188-2.087.436-3.008a9 9 0 0 1-1.565-.667A6.96 6.96 0 0 0 1.018 7.5zm1.4-2.741a12.3 12.3 0 0 0-.4 2.741H7.5V5.091c-.91-.03-1.783-.145-2.591-.332M8.5 5.09V7.5h2.99a12.3 12.3 0 0 0-.399-2.741c-.808.187-1.681.301-2.591.332zM4.51 8.5c.035.987.176 1.914.399 2.741A13.6 13.6 0 0 1 7.5 10.91V8.5zm3.99 0v2.409c.91.03 1.783.145 2.591.332.223-.827.364-1.754.4-2.741zm-3.282 3.696q.18.469.395.872c.552 1.035 1.218 1.65 1.887 1.855V11.91c-.81.03-1.577.13-2.282.287zm.11 2.276a7 7 0 0 1-.598-.933 9 9 0 0 1-.481-1.079 8.4 8.4 0 0 0-1.198.49 7 7 0 0 0 2.276 1.522zm-1.383-2.964A13.4 13.4 0 0 1 3.508 8.5h-2.49a6.96 6.96 0 0 0 1.362 3.675c.47-.258.995-.482 1.565-.667m6.728 2.964a7 7 0 0 0 2.275-1.521 8.4 8.4 0 0 0-1.197-.49 9 9 0 0 1-.481 1.078 7 7 0 0 1-.597.933M8.5 11.909v3.014c.67-.204 1.335-.82 1.887-1.855q.216-.403.395-.872A12.6 12.6 0 0 0 8.5 11.91zm3.555-.401c.57.185 1.095.409 1.565.667A6.96 6.96 0 0 0 14.982 8.5h-2.49a13.4 13.4 0 0 1-.437 3.008M14.982 7.5a6.96 6.96 0 0 0-1.362-3.675c-.47.258-.995.482-1.565.667.248.92.4 1.938.437 3.008zM11.27 2.461q.266.502.482 1.078a8.4 8.4 0 0 0 1.196-.49 7 7 0 0 0-2.275-1.52c.218.283.418.597.597.932m-.488 1.343a8 8 0 0 0-.395-.872C9.835 1.897 9.17 1.282 8.5 1.077V4.09c.81-.03 1.577-.13 2.282-.287z"/> </svg> 国外') + '</td>';
             html += '<td>' + (p.mention_count || 0) + '</td>';
             html += '<td><strong style="color:#e74c3c">' + (p.heat_score || 0).toFixed(1) + '</strong></td>';
             html += '<td><span style="color:' + trendColor + ';font-weight:bold">' + trendIcon + ' ' + Math.abs(trend).toFixed(1) + '%</span></td>';
@@ -2405,7 +2405,7 @@ const Pages = {
         }
         container.innerHTML = html;
       } catch (e) {
-        container.innerHTML = Components.pageHeader('products') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+        container.innerHTML = Components.pageHeader('products') + '<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
       }
     }
   },
@@ -2428,13 +2428,13 @@ const Pages = {
         html += '</div>';
         
         if (trends.length === 0) {
-          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">暂无技术趋势数据，等待每日自动分析</div></div></div></div>';
+          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg></div><div class="empty-state-text">暂无技术趋势数据，等待每日自动分析</div></div></div></div>';
         } else {
           html += '<div class="grid-2">';
           trends.forEach(t => {
             const growth = t.growth_rate || 0;
             const levelColor = t.trend_level === 'rising' ? '#27ae60' : t.trend_level === 'declining' ? '#e74c3c' : '#f39c12';
-            const levelText = t.trend_level === 'rising' ? '🚀 快速增长' : t.trend_level === 'declining' ? '📉 热度下降' : '📊 稳定发展';
+            const levelText = t.trend_level === 'rising' ? '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M9.752 6.193c.599.6 1.73.437 2.528-.362s.96-1.932.362-2.531c-.599-.6-1.73-.438-2.528.361-.798.8-.96 1.933-.362 2.532"/> <path d="M15.811 3.312c-.363 1.534-1.334 3.626-3.64 6.218l-.24 2.408a2.56 2.56 0 0 1-.732 1.526L8.817 15.85a.51.51 0 0 1-.867-.434l.27-1.899c.04-.28-.013-.593-.131-.956a9 9 0 0 0-.249-.657l-.082-.202c-.815-.197-1.578-.662-2.191-1.277-.614-.615-1.079-1.379-1.275-2.195l-.203-.083a10 10 0 0 0-.655-.248c-.363-.119-.675-.172-.955-.132l-1.896.27A.51.51 0 0 1 .15 7.17l2.382-2.386c.41-.41.947-.67 1.524-.734h.006l2.4-.238C9.005 1.55 11.087.582 12.623.208c.89-.217 1.59-.232 2.08-.188.244.023.435.06.57.093q.1.026.16.045c.184.06.279.13.351.295l.029.073a3.5 3.5 0 0 1 .157.721c.055.485.051 1.178-.159 2.065m-4.828 7.475.04-.04-.107 1.081a1.54 1.54 0 0 1-.44.913l-1.298 1.3.054-.38c.072-.506-.034-.993-.172-1.418a9 9 0 0 0-.164-.45c.738-.065 1.462-.38 2.087-1.006M5.205 5c-.625.626-.94 1.351-1.004 2.09a9 9 0 0 0-.45-.164c-.424-.138-.91-.244-1.416-.172l-.38.054 1.3-1.3c.245-.246.566-.401.91-.44l1.08-.107zm9.406-3.961c-.38-.034-.967-.027-1.746.163-1.558.38-3.917 1.496-6.937 4.521-.62.62-.799 1.34-.687 2.051.107.676.483 1.362 1.048 1.928.564.565 1.25.941 1.924 1.049.71.112 1.429-.067 2.048-.688 3.079-3.083 4.192-5.444 4.556-6.987.183-.771.18-1.345.138-1.713a3 3 0 0 0-.045-.283 3 3 0 0 0-.3-.041Z"/> <path d="M7.009 12.139a7.6 7.6 0 0 1-1.804-1.352A7.6 7.6 0 0 1 3.794 8.86c-1.102.992-1.965 5.054-1.839 5.18.125.126 3.936-.896 5.054-1.902Z"/> </svg> 快速增长' : t.trend_level === 'declining' ? '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5"/> </svg> 热度下降' : '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg> 稳定发展';
             
             html += '<div class="card">';
             html += '<div class="card-header"><h3>' + (t.name || '-') + '</h3><span class="tag" style="background:' + levelColor + '">' + levelText + '</span></div>';
@@ -2454,7 +2454,7 @@ const Pages = {
         }
         container.innerHTML = html;
       } catch (e) {
-        container.innerHTML = Components.pageHeader('trends') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+        container.innerHTML = Components.pageHeader('trends') + '<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
       }
     }
   },
@@ -2475,11 +2475,11 @@ const Pages = {
         html += '</div>';
         
         if (reports.length === 0) {
-          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">暂无日报数据，等待每日自动生成</div></div></div></div>';
+          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg></div><div class="empty-state-text">暂无日报数据，等待每日自动生成</div></div></div></div>';
         } else {
           reports.forEach(r => {
             html += '<div class="card" style="margin-bottom:16px">';
-            html += '<div class="card-header"><h3>📅 ' + (r.report_date || r.date || '未知日期') + ' 日报</h3>';
+            html += '<div class="card-header"><h3><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z"/> <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/> </svg> ' + (r.report_date || r.date || '未知日期') + ' 日报</h3>';
             if (r.quality_score) {
               html += '<span class="tag" style="background:#27ae60">质量分: ' + r.quality_score + '</span>';
             }
@@ -2498,7 +2498,7 @@ const Pages = {
         }
         container.innerHTML = html;
       } catch (e) {
-        container.innerHTML = Components.pageHeader('reports') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+        container.innerHTML = Components.pageHeader('reports') + '<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
       }
     }
   },
@@ -2521,12 +2521,12 @@ const Pages = {
         html += '</div>';
         
         if (opportunities.length === 0) {
-          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">暂无销售机会数据，等待AI自动分析</div></div></div></div>';
+          html += '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg></div><div class="empty-state-text">暂无销售机会数据，等待AI自动分析</div></div></div></div>';
         } else {
           html += '<div class="card"><div class="card-header"><h3>AI识别的销售机会</h3></div><div class="card-body">';
           opportunities.forEach(o => {
             const priorityColor = o.priority === 'high' ? '#e74c3c' : o.priority === 'medium' ? '#f39c12' : '#95a5a6';
-            const priorityText = o.priority === 'high' ? '🔥 高优先级' : o.priority === 'medium' ? '⚡ 中优先级' : '📌 低优先级';
+            const priorityText = o.priority === 'high' ? '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16m0-1c-1.657 0-3-1-3-2.75 0-.75.25-2 1.25-3C6.125 10 7 10.5 7 10.5c-.375-1.25.5-3.25 2-3.5-.179 1-.25 2 1 3 .625.5 1 1.364 1 2.25C11 14 9.657 15 8 15"/> </svg> 高优先级' : o.priority === 'medium' ? '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641z"/> </svg> 中优先级' : '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M9.828.722a.5.5 0 0 1 .354.146l4.95 4.95a.5.5 0 0 1 0 .707c-.48.48-1.072.588-1.503.588-.177 0-.335-.018-.46-.039l-3.134 3.134a6 6 0 0 1 .16 1.013c.046.702-.032 1.687-.72 2.375a.5.5 0 0 1-.707 0l-2.829-2.828-3.182 3.182c-.195.195-1.219.902-1.414.707s.512-1.22.707-1.414l3.182-3.182-2.828-2.829a.5.5 0 0 1 0-.707c.688-.688 1.673-.767 2.375-.72a6 6 0 0 1 1.013.16l3.134-3.133a3 3 0 0 1-.04-.461c0-.43.108-1.022.589-1.503a.5.5 0 0 1 .353-.146m.122 2.112v-.002zm0-.002v.002a.5.5 0 0 1-.122.51L6.293 6.878a.5.5 0 0 1-.511.12H5.78l-.014-.004a5 5 0 0 0-.288-.076 5 5 0 0 0-.765-.116c-.422-.028-.836.008-1.175.15l5.51 5.509c.141-.34.177-.753.149-1.175a5 5 0 0 0-.192-1.054l-.004-.013v-.001a.5.5 0 0 1 .12-.512l3.536-3.535a.5.5 0 0 1 .532-.115l.096.022c.087.017.208.034.344.034q.172.002.343-.04L9.927 2.028q-.042.172-.04.343a1.8 1.8 0 0 0 .062.46z"/> </svg> 低优先级';
             
             html += '<div style="padding:16px 20px;border-bottom:1px solid #eee">';
             html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
@@ -2543,7 +2543,7 @@ const Pages = {
         }
         container.innerHTML = html;
       } catch (e) {
-        container.innerHTML = Components.pageHeader('sales') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+        container.innerHTML = Components.pageHeader('sales') + '<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
       }
     }
   },
@@ -2565,10 +2565,10 @@ const Pages = {
         const stageColors = {new:'#94A3B8',contacted:'#60A5FA',requirement:'#FBBF24',solution:'#34D399',negotiation:'#F472B6',closed:'#10B981',lost:'#EF4444'};
         
         let html = '<div class="metric-cards">';
-        html += '<div class="metric-card"><div class="metric-icon" style="background:#E0F2FE;color:#0284C7;">👥</div><div class="metric-info"><div class="metric-value">' + (ov.total_customers||0) + '</div><div class="metric-label">客户总数</div></div><div class="metric-trend up">本月+' + (ov.new_customers||0) + '</div></div>';
-        html += '<div class="metric-card"><div class="metric-icon" style="background:#FEF3C7;color:#D97706;">💰</div><div class="metric-info"><div class="metric-value">' + amount.toFixed(1) + '万</div><div class="metric-label">商机金额</div></div></div>';
-        html += '<div class="metric-card"><div class="metric-icon" style="background:#FEE2E2;color:#DC2626;">⚠️</div><div class="metric-info"><div class="metric-value">' + (ov.risk_customers||0) + '</div><div class="metric-label">风险客户</div></div><div class="metric-trend down">需关注</div></div>';
-        html += '<div class="metric-card"><div class="metric-icon" style="background:#D1FAE5;color:#059669;">✅</div><div class="metric-info"><div class="metric-value">' + (ov.today_tasks||0) + '</div><div class="metric-label">今日任务</div></div><div class="metric-trend up">待处理</div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#E0F2FE;color:#0284C7;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/> </svg></div><div class="metric-info"><div class="metric-value">' + (ov.total_customers||0) + '</div><div class="metric-label">客户总数</div></div><div class="metric-trend up">本月+' + (ov.new_customers||0) + '</div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#FEF3C7;color:#D97706;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/> <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2z"/> </svg></div><div class="metric-info"><div class="metric-value">' + amount.toFixed(1) + '万</div><div class="metric-label">商机金额</div></div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#FEE2E2;color:#DC2626;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="metric-info"><div class="metric-value">' + (ov.risk_customers||0) + '</div><div class="metric-label">风险客户</div></div><div class="metric-trend down">需关注</div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#D1FAE5;color:#059669;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/> </svg></div><div class="metric-info"><div class="metric-value">' + (ov.today_tasks||0) + '</div><div class="metric-label">今日任务</div></div><div class="metric-trend up">待处理</div></div>';
         html += '</div>';
         
         html += '<div class="dashboard-grid">';
@@ -2594,7 +2594,7 @@ const Pages = {
         html += '<div class="dashboard-card"><h3>风险客户</h3><div class="risk-list">';
         (an.risk_customers || []).slice(0,5).forEach(function(r) {
           var riskReason = (r.risk_reason||'').replace(/\[([a-z_]+)\]/g, function(m,k){ return stageNames[k] ? ('['+stageNames[k]+']') : m; });
-          html += '<div class="risk-item"><div class="risk-icon">⚠️</div><div class="risk-info"><div class="risk-name">' + r.name + '</div><div class="risk-reason">' + riskReason + '</div></div></div>';
+          html += '<div class="risk-item"><div class="risk-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="risk-info"><div class="risk-name">' + r.name + '</div><div class="risk-reason">' + riskReason + '</div></div></div>';
         });
         html += '</div></div></div>';
         
@@ -2644,7 +2644,7 @@ const Pages = {
         html += '</tbody></table></div></div></div>';
         container.innerHTML = html;
       } catch (e) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: '+e.message+'</div></div>';
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="empty-state-text">加载失败: '+e.message+'</div></div>';
       }
     }
   },
@@ -2654,7 +2654,7 @@ const Pages = {
       const params = Router.currentParams || {};
       // 防御：缺少客户ID（如直接打开无 ?id= 的详情URL）时不发无效请求，给出友好引导
       if (!params.id) {
-        container.innerHTML = Components.pageHeader('workspace-customer-detail') + '<div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-text">未指定客户，请从「客户中心」列表选择客户查看详情。</div><button class="btn btn-primary" onclick="Router.navigate(\'workspace-customers\')">返回客户中心</button></div>';
+        container.innerHTML = Components.pageHeader('workspace-customer-detail') + '<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/> </svg></div><div class="empty-state-text">未指定客户，请从「客户中心」列表选择客户查看详情。</div><button class="btn btn-primary" onclick="Router.navigate(\'workspace-customers\')">返回客户中心</button></div>';
         return;
       }
       container.innerHTML = Components.pageHeader('workspace-customer-detail') + '<div class="page-loading"><div class="loading-spinner"></div><span>加载客户详情中...</span></div>';
@@ -2700,7 +2700,7 @@ const Pages = {
         html += '</div></div>';
         container.innerHTML = html;
       } catch (e) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: '+e.message+'</div></div>';
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="empty-state-text">加载失败: '+e.message+'</div></div>';
       }
     }
   },
@@ -2745,7 +2745,7 @@ const Pages = {
         }
         container.innerHTML = html;
       } catch (e) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: '+e.message+'</div></div>';
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="empty-state-text">加载失败: '+e.message+'</div></div>';
       }
     }
   },
@@ -2761,10 +2761,10 @@ const Pages = {
         const avg = data.length > 0 ? Math.round(data.reduce((s, d) => s + (d.deal_probability || 0), 0) / data.length) : 0;
         let html = Components.pageHeader('sales-prediction');
         html += '<div class="metric-cards">';
-        html += '<div class="metric-card"><div class="metric-icon" style="background:#DCFCE7;color:#16A34A;">🎯</div><div class="metric-info"><div class="metric-value">' + high + '</div><div class="metric-label">高概率客户</div></div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#DCFCE7;color:#16A34A;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/> <path d="M8 13A5 5 0 1 1 8 3a5 5 0 0 1 0 10m0 1A6 6 0 1 0 8 2a6 6 0 0 0 0 12"/> <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8"/> <path d="M9.5 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/> </svg></div><div class="metric-info"><div class="metric-value">' + high + '</div><div class="metric-label">高概率客户</div></div></div>';
         html += '<div class="metric-card"><div class="metric-icon" style="background:#FEF9C3;color:#CA8A04;">⏳</div><div class="metric-info"><div class="metric-value">' + med + '</div><div class="metric-label">中概率客户</div></div></div>';
-        html += '<div class="metric-card"><div class="metric-icon" style="background:#FEE2E2;color:#DC2626;">⚠️</div><div class="metric-info"><div class="metric-value">' + low + '</div><div class="metric-label">低概率客户</div></div></div>';
-        html += '<div class="metric-card"><div class="metric-icon" style="background:#CCFBF1;color:#0D9488;">📊</div><div class="metric-info"><div class="metric-value">' + avg + '%</div><div class="metric-label">平均成交概率</div></div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#FEE2E2;color:#DC2626;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="metric-info"><div class="metric-value">' + low + '</div><div class="metric-label">低概率客户</div></div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#CCFBF1;color:#0D9488;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg></div><div class="metric-info"><div class="metric-value">' + avg + '%</div><div class="metric-label">平均成交概率</div></div></div>';
         html += '</div>';
         if (data.length === 0) {
           html += Components.emptyState('暂无成交预测数据');
@@ -2788,7 +2788,7 @@ const Pages = {
         }
         container.innerHTML = html;
       } catch (e) {
-        container.innerHTML = Components.pageHeader('sales-prediction') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+        container.innerHTML = Components.pageHeader('sales-prediction') + '<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
       }
     }
   },
@@ -2804,12 +2804,12 @@ const Pages = {
         const amount = (d.total_amount || 0) / 10000;
         let html = Components.pageHeader('sales-funnel');
         html += '<div class="metric-cards">';
-        html += '<div class="metric-card"><div class="metric-icon" style="background:#CCFBF1;color:#0D9488;">👥</div><div class="metric-info"><div class="metric-value">' + total + '</div><div class="metric-label">客户总数</div></div></div>';
-        html += '<div class="metric-card"><div class="metric-icon" style="background:#FEF3C7;color:#D97706;">💰</div><div class="metric-info"><div class="metric-value">' + amount.toFixed(1) + '万</div><div class="metric-label">商机总金额</div></div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#CCFBF1;color:#0D9488;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/> </svg></div><div class="metric-info"><div class="metric-value">' + total + '</div><div class="metric-label">客户总数</div></div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#FEF3C7;color:#D97706;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/> <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2z"/> </svg></div><div class="metric-info"><div class="metric-value">' + amount.toFixed(1) + '万</div><div class="metric-label">商机总金额</div></div></div>';
         const closed = funnel.find(f => f.stage === 'closed');
-        html += '<div class="metric-card"><div class="metric-icon" style="background:#DCFCE7;color:#16A34A;">✅</div><div class="metric-info"><div class="metric-value">' + (closed ? closed.customer_count : 0) + '</div><div class="metric-label">已成交</div></div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#DCFCE7;color:#16A34A;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/> </svg></div><div class="metric-info"><div class="metric-value">' + (closed ? closed.customer_count : 0) + '</div><div class="metric-label">已成交</div></div></div>';
         const deal = funnel.find(f => f.stage === 'negotiation');
-        html += '<div class="metric-card"><div class="metric-icon" style="background:#E0E7FF;color:#4F46E5;">🤝</div><div class="metric-info"><div class="metric-value">' + (deal ? deal.customer_count : 0) + '</div><div class="metric-label">商务谈判</div></div></div>';
+        html += '<div class="metric-card"><div class="metric-icon" style="background:#E0E7FF;color:#4F46E5;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0m-.646 5.354a.5.5 0 0 0-.708-.708L7.5 10.793 6.354 9.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z"/> </svg></div><div class="metric-info"><div class="metric-value">' + (deal ? deal.customer_count : 0) + '</div><div class="metric-label">商务谈判</div></div></div>';
         html += '</div>';
         html += '<div class="card"><div class="card-header"><h3>销售阶段漏斗</h3></div><div class="card-body">';
         if (funnel.length === 0) {
@@ -2827,7 +2827,7 @@ const Pages = {
         html += '</div></div>';
         container.innerHTML = html;
       } catch (e) {
-        container.innerHTML = Components.pageHeader('sales-funnel') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+        container.innerHTML = Components.pageHeader('sales-funnel') + '<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
       }
     }
   },
@@ -2847,10 +2847,10 @@ const Pages = {
         let curKw = '';
         let html = Components.pageHeader('workspace-opportunities');
         html += '<div class="metric-cards">';
-        html += card('🔥', '#DBEAFE', '#2563EB', (summary.open || {}).count || 0, '在途商机 · ' + fmtWan((summary.open || {}).amount || 0));
-        html += card('✅', '#DCFCE7', '#16A34A', (summary.won || {}).count || 0, '已成交 · ' + fmtWan((summary.won || {}).amount || 0));
-        html += card('🚫', '#FEE2E2', '#DC2626', (summary.lost || {}).count || 0, '已丢单 · ' + fmtWan((summary.lost || {}).amount || 0));
-        html += card('📦', '#CCFBF1', '#0D9488', summary.total_count || 0, '商机总数 · ' + fmtWan(summary.total_amount || 0));
+        html += card('<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16m0-1c-1.657 0-3-1-3-2.75 0-.75.25-2 1.25-3C6.125 10 7 10.5 7 10.5c-.375-1.25.5-3.25 2-3.5-.179 1-.25 2 1 3 .625.5 1 1.364 1 2.25C11 14 9.657 15 8 15"/> </svg>', '#DBEAFE', '#2563EB', (summary.open || {}).count || 0, '在途商机 · ' + fmtWan((summary.open || {}).amount || 0));
+        html += card('<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/> </svg>', '#DCFCE7', '#16A34A', (summary.won || {}).count || 0, '已成交 · ' + fmtWan((summary.won || {}).amount || 0));
+        html += card('<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/> </svg>', '#FEE2E2', '#DC2626', (summary.lost || {}).count || 0, '已丢单 · ' + fmtWan((summary.lost || {}).amount || 0));
+        html += card('<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M7.752.066a.5.5 0 0 1 .496 0l3.75 2.143a.5.5 0 0 1 .252.434v3.995l3.498 2A.5.5 0 0 1 16 9.07v4.286a.5.5 0 0 1-.252.434l-3.75 2.143a.5.5 0 0 1-.496 0l-3.502-2-3.502 2.001a.5.5 0 0 1-.496 0l-3.75-2.143A.5.5 0 0 1 0 13.357V9.071a.5.5 0 0 1 .252-.434L3.75 6.638V2.643a.5.5 0 0 1 .252-.434zM4.25 7.504 1.508 9.071l2.742 1.567 2.742-1.567zM7.5 9.933l-2.75 1.571v3.134l2.75-1.571zm1 3.134 2.75 1.571v-3.134L8.5 9.933zm.508-3.996 2.742 1.567 2.742-1.567-2.742-1.567zm2.242-2.433V3.504L8.5 5.076V8.21zM7.5 8.21V5.076L4.75 3.504v3.134zM5.258 2.643 8 4.21l2.742-1.567L8 1.076zM15 9.933l-2.75 1.571v3.134L15 13.067zM3.75 14.638v-3.134L1 9.933v3.134z"/> </svg>', '#CCFBF1', '#0D9488', summary.total_count || 0, '商机总数 · ' + fmtWan(summary.total_amount || 0));
         html += '</div>';
         html += '<div class="card"><div class="card-header" style="flex-wrap:wrap;gap:12px;"><h3>商机列表</h3>';
         html += '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto;">';
@@ -2909,7 +2909,7 @@ const Pages = {
         renderTabs();
         renderRows();
       } catch (e) {
-        container.innerHTML = Components.pageHeader('workspace-opportunities') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+        container.innerHTML = Components.pageHeader('workspace-opportunities') + '<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
       }
     }
   },
@@ -2946,7 +2946,7 @@ const Pages = {
           });
         }
       } catch (e) {
-        container.innerHTML = Components.pageHeader('sales-review') + '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
+        container.innerHTML = Components.pageHeader('sales-review') + '<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div><div class="empty-state-text">加载失败: ' + e.message + '</div></div>';
       }
     }
   },

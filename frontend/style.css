@@ -1306,3 +1306,9 @@ tbody tr:hover td {
 .review-actions { margin-bottom: 16px; }
 .review-card { margin-bottom: 16px; }
 .markdown-content { line-height: 1.8; }
+
+/* ===== 统一线性图标 (Bootstrap Icons v1.11.3, MIT License) ===== */
+.bi-ico{width:1em;height:1em;vertical-align:-0.15em;fill:currentColor;display:inline-block;flex:none;line-height:1;}
+.empty-state-icon .bi-ico{width:44px;height:44px;}
+.dropdown-item-icon .bi-ico{width:18px;height:18px;}
+.dropdown-item-icon-text .bi-ico{width:18px;height:18px;}

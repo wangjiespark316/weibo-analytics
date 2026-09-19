@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>微博智能分析平台</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="stylesheet" href="/style.css?v=opp20260919b">
+  <link rel="stylesheet" href="/style.css?v=icons20260919a">
 </head>
 <body>
   <div id="app">
@@ -38,7 +38,7 @@
           <div class="dropdown-list" id="notification-list">
             <div class="dropdown-item notification-item" data-id="1" onclick="markNotificationAsRead(1);Router.navigate('daily-report');closeDropdowns()">
               <div class="notification-unread-dot"></div>
-              <div class="dropdown-item-icon" style="background:var(--primary-light);color:var(--primary);">📊</div>
+              <div class="dropdown-item-icon" style="background:var(--primary-light);color:var(--primary);"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z"/> </svg></div>
               <div class="dropdown-item-content">
                 <div class="dropdown-item-title">每日报告已生成</div>
                 <div class="dropdown-item-desc">2026年9月13日 AI 舆情分析日报已生成</div>
@@ -47,7 +47,7 @@
             </div>
             <div class="dropdown-item notification-item" data-id="2" onclick="markNotificationAsRead(2);Router.navigate('collect-task');closeDropdowns()">
               <div class="notification-unread-dot"></div>
-              <div class="dropdown-item-icon" style="background:var(--success-light);color:var(--success);">✅</div>
+              <div class="dropdown-item-icon" style="background:var(--success-light);color:var(--success);"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/> </svg></div>
               <div class="dropdown-item-content">
                 <div class="dropdown-item-title">采集任务完成</div>
                 <div class="dropdown-item-desc">微博数据采集 - AI行业 已完成，采集 1,286 条</div>
@@ -56,7 +56,7 @@
             </div>
             <div class="dropdown-item notification-item" data-id="3" onclick="markNotificationAsRead(3);Router.navigate('sentiment');closeDropdowns()">
               <div class="notification-unread-dot"></div>
-              <div class="dropdown-item-icon" style="background:var(--warning-light);color:var(--warning);">⚠️</div>
+              <div class="dropdown-item-icon" style="background:var(--warning-light);color:var(--warning);"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></div>
               <div class="dropdown-item-content">
                 <div class="dropdown-item-title">负面微博预警</div>
                 <div class="dropdown-item-desc">监测到 6 条负面微博，建议及时处理</div>
@@ -99,11 +99,11 @@
           </div>
           <div class="dropdown-list">
             <div class="dropdown-item" onclick="Router.navigate('api-key');closeDropdowns()">
-              <span class="dropdown-item-icon-text">🔑</span>
+              <span class="dropdown-item-icon-text"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2M2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/> </svg></span>
               <span>API Key 管理</span>
             </div>
             <div class="dropdown-item" onclick="Router.navigate('user-mgmt');closeDropdowns()">
-              <span class="dropdown-item-icon-text">👥</span>
+              <span class="dropdown-item-icon-text"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi-ico" viewBox="0 0 16 16"> <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/> </svg></span>
               <span>用户管理</span>
             </div>
           </div>
@@ -203,14 +203,14 @@
         <script src="/src/pages/workspace_tasks.js"><\/script>
         
         <!-- 旧版app.js（提供Components、Router等基础对象） -->
-        <script src="/app.js?v=frontfix20260919a"><\/script>
+        <script src="/app.js?v=icons20260919a"><\/script>
         
         <!-- 模块化启动器 -->
         <script src="/app.modular.js"><\/script>
       `);
     } else {
       // 默认模式：加载旧版app.js（稳定）
-      document.write('<script src="/app.js?v=frontfix20260919a"><\/script>');
+      document.write('<script src="/app.js?v=icons20260919a"><\/script>');
     }
   </script>
 
