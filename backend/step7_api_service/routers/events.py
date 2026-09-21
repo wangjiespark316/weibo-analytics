@@ -153,3 +153,71 @@ async def get_categories():
             {"key": "industry_trend", "name": "行业趋势"}
         ]
     }
+
+
+# === v1.2 AnyCross 免编排友好端点（只读、限量，增量追加，不改既有接口） ===
+_ANYCROSS_CATEGORY_CN = {
+    "model_release": "模型发布",
+    "product_launch": "产品发布",
+    "company_news": "公司动态",
+    "financing": "融资投资",
+    "policy": "政策监管",
+    "technology_breakthrough": "技术突破",
+    "application_case": "企业应用案例",
+    "industry_trend": "行业趋势",
+}
+
+
+def _collect_events_for_anycross(limit: int = 5):
+    """取最新可用日期的事件并完成列表字段归一化，供 array/bitable 两个导出端点复用。"""
+    from datetime import datetime as _dt
+    date = _dt.now().strftime("%Y-%m-%d")
+    evs = get_events(date, limit=50)
+    if not evs:
+        latest = get_latest_event_date()
+        if latest and latest != date:
+            date, evs = latest, get_events(latest, limit=50)
+    evs = (evs or [])[:limit]
+    for e in evs:
+        for _f in _LIST_FIELDS:
+            e[_f] = _as_list(e.get(_f))
+    return date, evs
+
+
+@router.get("/array", summary="顶层数组输出（供集成平台循环遍历，免JSON解析节点）")
+async def events_as_array(
+    limit: int = Query(5, ge=1, le=20, description="返回数量")
+):
+    _, _evs = _collect_events_for_anycross(limit)
+    return _evs
+
+
+@router.get("/bitable", summary="飞书多维表格『新增多条』请求体（records 已按中文列映射）")
+async def events_as_bitable(
+    limit: int = Query(5, ge=1, le=20, description="返回数量")
+):
+    _date, _evs = _collect_events_for_anycross(limit)
+    records = []
+    for e in _evs:
+        companies = e.get("companies") or []
+        techs = e.get("technologies") or []
+        cat_raw = e.get("category") or ""
+        cat = _ANYCROSS_CATEGORY_CN.get(cat_raw, cat_raw or "未分类")
+        records.append({
+            "fields": {
+                "事件标题": e.get("title") or "",
+                "事件日期": e.get("event_date") or _date,
+                "分类": cat,
+                "热度": int(e.get("heat_score") or 0),
+                "可信度": int(e.get("event_confidence") or 0),
+                "涉及公司": "、".join(companies),
+                "技术方向": "、".join(techs),
+                "事件摘要": e.get("summary") or "",
+                "行业影响": e.get("impact_analysis") or "",
+                "企业机会": e.get("business_opportunity") or "",
+                "情感倾向": e.get("sentiment") or "",
+                "来源": e.get("source") or "weibo",
+            }
+        })
+    return {"records": records}
+
