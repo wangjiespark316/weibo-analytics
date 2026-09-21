@@ -221,3 +221,33 @@ async def events_as_bitable(
         })
     return {"records": records}
 
+
+
+# === v1.2 AnyCross 循环写入用：中文列扁平行数组（增量追加，不改既有接口） ===
+@router.get("/rows", summary="中文列扁平行数组（供集成平台『列表循环+新增单条记录』逐列直绑，免表达式）")
+async def events_as_rows(
+    limit: int = Query(5, ge=1, le=20, description="返回数量")
+):
+    _date, _evs = _collect_events_for_anycross(limit)
+    rows = []
+    for e in _evs:
+        companies = e.get("companies") or []
+        techs = e.get("technologies") or []
+        cat_raw = e.get("category") or ""
+        cat = _ANYCROSS_CATEGORY_CN.get(cat_raw, cat_raw or "未分类")
+        rows.append({
+            "事件标题": e.get("title") or "",
+            "事件日期": e.get("event_date") or _date,
+            "分类": cat,
+            "热度": int(e.get("heat_score") or 0),
+            "可信度": int(e.get("event_confidence") or 0),
+            "涉及公司": "、".join(companies),
+            "技术方向": "、".join(techs),
+            "事件摘要": e.get("summary") or "",
+            "行业影响": e.get("impact_analysis") or "",
+            "企业机会": e.get("business_opportunity") or "",
+            "情感倾向": e.get("sentiment") or "",
+            "来源": e.get("source") or "weibo",
+        })
+    return rows
+
