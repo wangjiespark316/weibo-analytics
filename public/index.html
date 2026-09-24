@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>微博 AI 舆情观测</title>
+  <meta name="description" content="公开展示 AI 行业微博舆情的每日热帖、讨论趋势与评论情感。">
+  <link rel="stylesheet" href="/style.css?v=20260920">
+  <link rel="stylesheet" href="/mobile.css?v=20260920">
+  <script src="/app.js?v=20260923" defer></script>
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">●</span><span>WEIBO <b>SIGNAL</b></span></div>
+      <div class="top-right"><span class="live-dot"></span><span id="status">正在连接数据</span><span class="divider"></span><span id="clock"></span></div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="eyebrow">AI INDUSTRY INTELLIGENCE <span>·</span> PUBLIC VIEW</div>
+        <h1>看见今天的<br><em>AI 讨论。</em></h1>
+        <p>汇集微博公开讨论，追踪 AI 行业热点与情绪变化。数据按北京时间自然日更新，昨日榜单在补采完成后发布。</p>
+        <div class="hero-actions">
+          <div class="period-switch" role="group" aria-label="榜单日期">
+            <button id="tab-today" class="active" type="button">今日动态</button>
+            <button id="tab-yesterday" type="button">昨日完整榜</button>
+          </div>
+          <button id="refresh" class="refresh" type="button" aria-label="刷新数据">↻ <span>刷新数据</span></button>
+        </div>
+      </section>
+
+      <section class="stats" aria-label="舆情概况">
+        <article class="stat-card stat-primary"><div class="stat-label" id="count-label">今日相关微博</div><div class="stat-number" id="post-count">—</div><div class="stat-hint" id="date-range">正在读取</div></article>
+        <article class="stat-card"><div class="stat-label">正向评论占比</div><div class="stat-number" id="positive-ratio">—</div><div class="stat-hint">基于已采集评论的抽样分析</div></article>
+        <article class="stat-card"><div class="stat-label">评论情感样本</div><div class="stat-number" id="sample-size">—</div><div class="stat-hint">样本统计，不代表微博全量观点</div></article>
+      </section>
+
+      <div class="content-grid">
+        <section class="panel trends-panel" aria-labelledby="trend-title">
+          <div class="section-head"><div><div class="section-kicker">DISCUSSION TREND</div><h2 id="trend-title">AI 讨论趋势</h2></div><span class="section-note">近 7 天</span></div>
+          <div id="trend-chart" class="trend-chart" aria-label="近七天 AI 微博数量趋势"></div>
+          <div id="trend-caption" class="trend-caption">正在读取趋势</div>
+        </section>
+        <section class="panel sentiment-panel" aria-labelledby="sentiment-title">
+          <div class="section-head"><div><div class="section-kicker">COMMENT SENTIMENT</div><h2 id="sentiment-title">评论情感</h2></div><span class="section-note">抽样</span></div>
+          <div class="sentiment-bar" aria-hidden="true"><span id="bar-positive"></span><span id="bar-neutral"></span><span id="bar-negative"></span></div>
+          <div class="sentiment-legend"><div><i class="positive"></i>正向 <strong id="sent-positive">—</strong></div><div><i class="neutral"></i>中性 <strong id="sent-neutral">—</strong></div><div><i class="negative"></i>负向 <strong id="sent-negative">—</strong></div></div>
+          <p class="method-note">情感来自已采集评论的模型分析，仅用于观察讨论方向。</p>
+        </section>
+      </div>
+
+      <section class="posts-section" aria-labelledby="posts-title">
+        <div class="section-head posts-head"><div><div class="section-kicker">TOP DISCUSSIONS</div><h2 id="posts-title">热门讨论</h2></div><span id="posts-label" class="section-note">今日 · 热度排序</span></div>
+        <div id="posts" class="posts-list"><div class="empty-state">正在读取热门讨论…</div></div>
+      </section>
+    </main>
+
+    <footer><span>WEIBO SIGNAL · AI 行业舆情观测</span><span>公开微博数据 · 北京时间 · 自动更新</span><span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">豫ICP备2026047343号</a></span></footer>
+  </div>
+</body>
+</html>
